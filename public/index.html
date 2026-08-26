@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예린 & 부모님 통합 가계부 대시보드</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo-section">
+                <div class="header-logo">
+                    <span class="logo-icon">🔮</span>
+                    <h1>예린 & 부모님 통합 가계부</h1>
+                </div>
+                
+                <!-- View Mode Toggle -->
+                <div class="view-mode-toggle">
+                    <button class="toggle-btn active" id="viewModeUnified">🔮 통합 뷰</button>
+                    <button class="toggle-btn" id="viewModeParents">👴👵 부모님 전용 뷰</button>
+                </div>
+            </div>
+            
+            <!-- Month Selector -->
+            <div class="month-selector-container">
+                <span class="selector-label">조회 월 선택</span>
+                <div class="month-buttons" id="monthButtons">
+                    <!-- Javascript will generate 1~12 buttons -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Cross-Check Status Alert Banner -->
+        <section class="cross-check-panel card" id="crossCheckPanel">
+            <div class="panel-header">
+                <h2>🔗 가계부 간 거래 교차 검증 (송금 / 대신결제 정산)</h2>
+                <span class="badge" id="crossCheckSummary">검색 중...</span>
+            </div>
+            <div class="cross-check-lists">
+                <div class="check-col">
+                    <h3>✅ 일치하는 정산 내역</h3>
+                    <ul class="check-list" id="matchedList">
+                        <!-- Matched transactions go here -->
+                    </ul>
+                </div>
+                <div class="check-col">
+                    <h3>⚠️ 확인이 필요한 내역</h3>
+                    <ul class="check-list warn" id="unmatchedList">
+                        <!-- Unmatched transactions go here -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Grid (Side by Side) -->
+        <main class="dashboard-grid" id="mainDashboardGrid">
+            <!-- Yerin's Card -->
+            <section class="user-dashboard card" id="yerinDashboard">
+                <div class="user-profile">
+                    <span class="user-avatar">👩🏻‍💻</span>
+                    <div class="user-info">
+                        <h2>진예린 가계부</h2>
+                        <span class="data-source-badge">실시간 연동 (Obsidian MD)</span>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>총 수입</h3>
+                        <p class="value income-color" id="yerinIncome">0원</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>소비성 지출</h3>
+                        <p class="value expense-color" id="yerinConsumption">0원</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>저축성 지출</h3>
+                        <p class="value savings-color" id="yerinSavings">0원</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>당월 잔액 / 저축률</h3>
+                        <p class="value balance-color" id="yerinBalance">0원</p>
+                        <span class="sub-label" id="yerinSavingsRate">저축률: 0%</span>
+                    </div>
+                </div>
+
+                <div class="visuals-section">
+                    <div class="chart-container">
+                        <h3>📊 카테고리별 소비 분석</h3>
+                        <canvas id="yerinChart"></canvas>
+                    </div>
+                    <div class="calendar-container">
+                        <h3>⭐ 무지출 성공 달력</h3>
+                        <div class="calendar-header" id="yerinCalMonth">2026년 8월</div>
+                        <div class="calendar-grid-header">
+                            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                        </div>
+                        <div class="calendar-grid" id="yerinCalendar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Parents' Card -->
+            <section class="user-dashboard card" id="parentsDashboard">
+                <div class="user-profile">
+                    <span class="user-avatar">👴👵</span>
+                    <div class="user-info">
+                        <h2>부모님(우민/종란) 가계부</h2>
+                        <span class="data-source-badge warning-badge" id="parentsSourceBadge">연동 중 (Excel)</span>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>총 수입</h3>
+                        <p class="value income-color" id="parentsIncome">0원</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>소비성 지출</h3>
+                        <p class="value expense-color" id="parentsConsumption">0원</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>저축성 지출</h3>
+                        <p class="value savings-color" id="parentsSavings">0원</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>당월 잔액 / 저축률</h3>
+                        <p class="value balance-color" id="parentsBalance">0원</p>
+                        <span class="sub-label" id="parentsSavingsRate">저축률: 0%</span>
+                    </div>
+                </div>
+
+                <!-- Mortgage Loan Card -->
+                <div class="loan-card" id="parentsLoanCard" style="display: none;">
+                    <div class="loan-header">
+                        <h3>🏠 주택담보대출 상환 현황 (엄마국민 담보대출)</h3>
+                        <span class="loan-progress-badge" id="loanProgressPct">0% 상환 완료</span>
+                    </div>
+                    <div class="loan-progress-bar-container">
+                        <div class="loan-progress-bar" id="loanProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <div class="loan-details">
+                        <div class="loan-detail-item">
+                            <span class="label">총 대출액</span>
+                            <span class="value" id="loanTotal">0원</span>
+                        </div>
+                        <div class="loan-detail-item">
+                            <span class="label">대출 잔액</span>
+                            <span class="value" id="loanBalance">0원</span>
+                        </div>
+                        <div class="loan-detail-item">
+                            <span class="label">당월 상환액</span>
+                            <span class="value" id="loanMonthlyPayment">0원</span>
+                        </div>
+                        <div class="loan-detail-sub">
+                            <div>원금 상환: <strong id="loanPrincipal">0원</strong></div>
+                            <div>이자 납부: <strong id="loanInterest">0원</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visuals-section">
+                    <div class="chart-container">
+                        <h3>📊 카테고리별 소비 분석</h3>
+                        <canvas id="parentsChart"></canvas>
+                    </div>
+                    <div class="calendar-container">
+                        <h3>⭐ 무지출 성공 달력</h3>
+                        <div class="calendar-header" id="parentsCalMonth">2026년 8월</div>
+                        <div class="calendar-grid-header">
+                            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                        </div>
+                        <div class="calendar-grid" id="parentsCalendar"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

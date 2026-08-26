@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부모님 가계부 대시보드</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="parents.css">
+</head>
+<body>
+    <div class="parents-layout">
+        <!-- Left Sidebar (Matching Mockup) -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-emoji">👴👵</span>
+                <h2>가계부 대시보드</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">부모님 가계부</div>
+                <ul>
+                    <li class="nav-item active" data-tab="overview">
+                        <span class="nav-icon">📊</span> 핵심 요약
+                    </li>
+                    <li class="nav-item" data-tab="income-detail">
+                        <span class="nav-icon">📈</span> 수입 상세 내역
+                    </li>
+                    <li class="nav-item" data-tab="expense-detail">
+                        <span class="nav-icon">📉</span> 지출 상세 내역
+                    </li>
+                    <li class="nav-item" data-tab="loan-status">
+                        <span class="nav-icon">🏠</span> 대출 상환 현황
+                    </li>
+                    <li class="nav-item" data-tab="fixed-analysis">
+                        <span class="nav-icon">📌</span> 고정지출 및 AI 분석
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Fun Mario sticker matching the user mockup -->
+            <div class="sidebar-sticker">
+                <img src="https://img.icons8.com/color/96/super-mario.png" alt="Mario" class="mario-img">
+                <p>오늘도 화이팅! 🍄</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Controls (Month selector in mockup pill shape) -->
+            <header class="content-header">
+                <div class="header-title">
+                    <h1 id="activeTabTitle">핵심 요약</h1>
+                    <p class="subtitle" id="parentsSourceBadge">2026년 가계부 연동 완료</p>
+                </div>
+                
+                <div class="month-selector">
+                    <span class="month-label">조회 월</span>
+                    <div class="month-pills" id="monthPills">
+                        <!-- Pill buttons 1월 to 12월 will be generated here -->
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stat Cards Row -->
+            <section class="stats-row">
+                <div class="stat-card savings-border">
+                    <div class="stat-info">
+                        <h3>당월 잔액 (수입 - 지출)</h3>
+                        <p class="stat-value savings-text" id="balanceVal">0원</p>
+                    </div>
+                    <span class="stat-emoji">💰</span>
+                </div>
+                
+                <div class="stat-card income-border">
+                    <div class="stat-info">
+                        <h3>총 수입</h3>
+                        <p class="stat-value income-text" id="incomeVal">0원</p>
+                    </div>
+                    <span class="stat-emoji">💸</span>
+                </div>
+
+                <div class="stat-card expense-border">
+                    <div class="stat-info">
+                        <h3>총 소비 지출</h3>
+                        <p class="stat-value expense-text" id="expenseVal">0원</p>
+                    </div>
+                    <span class="stat-emoji">🛒</span>
+                </div>
+
+                <div class="stat-card loan-border">
+                    <div class="stat-info">
+                        <h3>이번 달 대출 상환</h3>
+                        <p class="stat-value loan-text" id="loanVal">0원</p>
+                    </div>
+                    <span class="stat-emoji">🏠</span>
+                </div>
+            </section>
+
+            <!-- TAB 1: 핵심 요약 (Overview Tab) -->
+            <section class="tab-panel active" id="panel-overview">
+                
+                <!-- Yearly Flow Trend Chart Card (Matching Mockup combination) -->
+                <div class="panel-card trend-panel-card" style="margin-bottom: 25px;">
+                    <div class="panel-card-header">
+                        <h3>📈 연간 월별 흐름 추이 (수입 ㆍ 지출 ㆍ 추정 저축액)</h3>
+                        <span class="header-help">1월부터 12월까지의 자금 흐름 변동 추이 그래프입니다. (바 그래프: 수입/지출, 꺾은선: 저축액)</span>
+                    </div>
+                    <div class="trend-chart-wrapper" style="height: 340px; position: relative;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="overview-grid">
+                    <!-- Chart Column -->
+                    <div class="panel-card chart-panel">
+                        <div class="panel-card-header">
+                            <h3>📊 지출 카테고리 분포</h3>
+                            <span class="header-help">지출 비중이 큰 순서대로 표시됩니다.</span>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Calendar / Success Panel -->
+                    <div class="panel-card calendar-panel">
+                        <div class="panel-card-header">
+                            <h3>⭐ 무지출 성공 캘린더</h3>
+                            <span class="header-help" id="calMonthTitle">2026년 8월</span>
+                        </div>
+                        <div class="calendar-layout">
+                            <div class="cal-week-header">
+                                <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                            </div>
+                            <div class="cal-days-grid" id="parentsCalendar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loan visual grid duplicated in overview for discoverability -->
+                <div class="loan-visual-grid" style="margin-top: 25px;">
+                    <!-- Progress Card -->
+                    <div class="panel-card loan-progress-card">
+                        <div class="panel-card-header">
+                            <h3>🏠 주택담보대출 상환 요약</h3>
+                            <span class="header-help">엄마국민 담보대출 상환 현황입니다.</span>
+                        </div>
+                        <div class="loan-progress-gauge-container">
+                            <svg class="progress-ring" width="180" height="180">
+                                <circle class="progress-ring-circle-bg" stroke="#f1f5f9" stroke-width="12" fill="transparent" r="76" cx="90" cy="90"/>
+                                <circle class="progress-ring-circle" id="loanProgressRingOverview" stroke="#3b82f6" stroke-width="12" fill="transparent" r="76" cx="90" cy="90"/>
+                            </svg>
+                            <div class="gauge-overlay">
+                                <span class="gauge-pct" id="loanGaugePctOverview">0%</span>
+                                <span class="gauge-label">상환 완료</span>
+                            </div>
+                        </div>
+                        
+                        <div class="loan-gauge-info">
+                            <p>총 대출액 <strong>2억 1,700만 원</strong> 중</p>
+                            <p>현재까지 <strong id="loanRepaidAmtOverview" class="savings-text">0원</strong> 상환 완료되었습니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="panel-card loan-stats-card">
+                        <div class="panel-card-header">
+                            <h3>💰 당월 대출 원리금 상환 상세</h3>
+                            <span class="header-help" id="loanMonthLabelOverview">2026년 8월</span>
+                        </div>
+                        <div class="loan-numbers-grid">
+                            <div class="loan-num-item">
+                                <span class="num-label">대출 원금 잔액</span>
+                                <span class="num-value" id="loanStatBalanceOverview">0원</span>
+                            </div>
+                            <div class="loan-num-item">
+                                <span class="num-label">당월 총 상환금</span>
+                                <span class="num-value expense-text" id="loanStatTotalOverview">0원</span>
+                            </div>
+                            <div class="loan-num-item highlight">
+                                <span class="num-label">└ 이번 달 갚은 원금</span>
+                                <span class="num-value savings-text" id="loanStatPrincipalOverview">0원</span>
+                            </div>
+                            <div class="loan-num-item highlight">
+                                <span class="num-label">└ 이번 달 이자 비용</span>
+                                <span class="num-value warn-text" id="loanStatInterestOverview">0원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: 수입 상세 내역 (Income Detail) -->
+            <section class="tab-panel" id="panel-income-detail">
+                <div class="panel-card table-panel">
+                    <div class="panel-card-header">
+                        <h3>📈 수입 상세 항목 리스트</h3>
+                        <span class="header-help">이번 달에 입금된 모든 수입 내역입니다.</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th>날짜</th>
+                                    <th>수입 항목(대분류)</th>
+                                    <th>상세 분류</th>
+                                    <th>내용 / 출처</th>
+                                    <th class="text-right">금액</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomeTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: 지출 상세 내역 (Expense Detail) -->
+            <section class="tab-panel" id="panel-expense-detail">
+                <div class="panel-card table-panel">
+                    <div class="panel-card-header">
+                        <h3>📉 소비 및 지출 상세 리스트</h3>
+                        <span class="header-help">이번 달에 사용된 모든 지출 내역입니다. (카드값 납부 내역 제외)</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th>날짜</th>
+                                    <th>결제 수단</th>
+                                    <th>지출 분류</th>
+                                    <th>상세 내역</th>
+                                    <th>사용처</th>
+                                    <th class="text-right">금액</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: 대출 상환 현황 (Loan Status) -->
+            <section class="tab-panel" id="panel-loan-status">
+                <div class="loan-visual-grid">
+                    <!-- Progress Card -->
+                    <div class="panel-card loan-progress-card">
+                        <div class="panel-card-header">
+                            <h3>🏠 주택담보대출 상환 요약</h3>
+                            <span class="header-help">엄마국민 담보대출 상환 현황입니다.</span>
+                        </div>
+                        <div class="loan-progress-gauge-container">
+                            <svg class="progress-ring" width="180" height="180">
+                                <circle class="progress-ring-circle-bg" stroke="#f1f5f9" stroke-width="12" fill="transparent" r="76" cx="90" cy="90"/>
+                                <circle class="progress-ring-circle" id="loanProgressRing" stroke="#3b82f6" stroke-width="12" fill="transparent" r="76" cx="90" cy="90"/>
+                            </svg>
+                            <div class="gauge-overlay">
+                                <span class="gauge-pct" id="loanGaugePct">0%</span>
+                                <span class="gauge-label">상환 완료</span>
+                            </div>
+                        </div>
+                        
+                        <div class="loan-gauge-info">
+                            <p>총 대출액 <strong>2억 1,700만 원</strong> 중</p>
+                            <p>현재까지 <strong id="loanRepaidAmt" class="savings-text">0원</strong> 상환 완료되었습니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="panel-card loan-stats-card">
+                        <div class="panel-card-header">
+                            <h3>💰 당월 대출 원리금 상환 상세</h3>
+                            <span class="header-help" id="loanMonthLabel">2026년 8월</span>
+                        </div>
+                        <div class="loan-numbers-grid">
+                            <div class="loan-num-item">
+                                <span class="num-label">대출 원금 잔액</span>
+                                <span class="num-value" id="loanStatBalance">0원</span>
+                            </div>
+                            <div class="loan-num-item">
+                                <span class="num-label">당월 총 상환금</span>
+                                <span class="num-value expense-text" id="loanStatTotal">0원</span>
+                            </div>
+                            <div class="loan-num-item highlight">
+                                <span class="num-label">└ 이번 달 갚은 원금</span>
+                                <span class="num-value savings-text" id="loanStatPrincipal">0원</span>
+                            </div>
+                            <div class="loan-num-item highlight">
+                                <span class="num-label">└ 이번 달 이자 비용</span>
+                                <span class="num-value warn-text" id="loanStatInterest">0원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: 고정지출 및 AI 분석 (Fixed Expenses & AI Analysis) -->
+            <section class="tab-panel" id="panel-fixed-analysis">
+                <div class="loan-visual-grid">
+                    <!-- Fixed Expenses Card -->
+                    <div class="panel-card table-panel" style="flex: 2;">
+                        <div class="panel-card-header">
+                            <h3>📌 이 달의 고정지출 내역</h3>
+                            <span class="header-help">보험, 대출, 통신비 등 고정적으로 발생하는 지출입니다.</span>
+                        </div>
+                        <div class="table-container">
+                            <table class="detail-table">
+                                <thead>
+                                    <tr>
+                                        <th>날짜</th>
+                                        <th>지출 분류</th>
+                                        <th>항목 / 내용</th>
+                                        <th class="text-right">금액</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fixedExpenseTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #f8fafc; font-weight: bold; color: #0f766e; border-top: 2px solid #cbd5e1;">
+                                        <td colspan="3" style="padding: 12px; text-align: center;">고정지출 총 합계</td>
+                                        <td id="fixedExpenseTotal" class="text-right" style="padding: 12px; font-size: 1.05rem;">0 원</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Analysis Card -->
+                    <div class="panel-card" style="flex: 1; background: linear-gradient(145deg, #f0fdfa, #ecfeff); border-top: 4px solid #14b8a6;">
+                        <div class="panel-card-header">
+                            <h3 style="color: #0f766e;">🤖 AI 대출 상환 솔루션</h3>
+                        </div>
+                        <div id="ai-report-content" class="markdown-body" style="padding: 10px 5px; font-size: 0.95rem; line-height: 1.6; color: #334155;">
+                            <p class="empty-state" style="text-align: center; color: #64748b;">해당 월의 AI 분석 리포트가 아직 생성되지 않았습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="parents.js"></script>
+</body>
+</html>

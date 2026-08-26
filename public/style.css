@@ -1,0 +1,587 @@
+/* Global Variables */
+:root {
+    --bg-color: #0c0e14;
+    --card-bg: rgba(22, 26, 38, 0.65);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f1f3f9;
+    --text-secondary: #8e95a7;
+    
+    --accent-income: #00e676;
+    --accent-expense: #ff4d4d;
+    --accent-savings: #00b0ff;
+    --accent-balance: #ffeb3b;
+    --accent-cross: #7c4dff;
+    --accent-loan: #e3f2fd;
+    
+    --glow-income: rgba(0, 230, 118, 0.2);
+    --glow-expense: rgba(255, 77, 77, 0.2);
+    --glow-savings: rgba(0, 176, 255, 0.2);
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 10% 20%, rgba(20, 24, 36, 0.8) 0%, rgba(12, 14, 20, 1) 90%);
+    color: var(--text-primary);
+    font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    padding: 30px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Card Style (Glassmorphism) */
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Header Styles */
+.app-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.header-logo-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-icon {
+    font-size: 32px;
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+.header-logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* View Mode Toggle */
+.view-mode-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+    color: var(--text-primary);
+}
+
+.toggle-btn.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: #a5b4fc;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.month-selector-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.selector-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.month-buttons {
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.month-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.month-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.month-btn.active {
+    color: #0c0e14;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    box-shadow: 0 4px 12px rgba(199, 210, 254, 0.3);
+}
+
+/* Cross-Check Panel */
+.cross-check-panel {
+    border-left: 5px solid var(--accent-cross);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 15px;
+}
+
+.panel-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.badge {
+    background: rgba(124, 77, 255, 0.15);
+    color: #b388ff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid rgba(124, 77, 255, 0.3);
+}
+
+.cross-check-lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+@media (max-width: 900px) {
+    .cross-check-lists {
+        grid-template-columns: 1fr;
+    }
+}
+
+.check-col h3 {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.check-list::-webkit-scrollbar {
+    width: 6px;
+}
+.check-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.check-list li {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.check-list li .tx-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.check-list li .tx-title {
+    font-weight: 600;
+}
+
+.check-list li .tx-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.check-list li .tx-amount {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.check-list li.match-item {
+    border-left: 3px solid var(--accent-income);
+}
+.check-list li.match-item .tx-amount {
+    color: var(--accent-income);
+}
+
+.check-list.warn li {
+    border-left: 3px solid var(--accent-expense);
+}
+.check-list.warn li .tx-amount {
+    color: var(--accent-expense);
+}
+
+.no-tx-msg {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 15px 0;
+}
+
+/* User Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.dashboard-grid.parents-only-view {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.user-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    font-size: 40px;
+    background: rgba(255, 255, 255, 0.04);
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+}
+
+.user-info h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.data-source-badge {
+    display: inline-block;
+    font-size: 11px;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.data-source-badge.warning-badge {
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.1);
+}
+
+/* Metrics Cards Layout */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card h3 {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-card .value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.metric-card .sub-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Loan Card (Mortgage Loan Section) */
+.loan-card {
+    background: rgba(0, 176, 255, 0.03);
+    border: 1px solid rgba(0, 176, 255, 0.15);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0, 176, 255, 0.05);
+}
+
+.loan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.loan-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #80d8ff;
+}
+
+.loan-progress-badge {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-savings);
+}
+
+.loan-progress-bar-container {
+    background: rgba(255, 255, 255, 0.04);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loan-progress-bar {
+    background: linear-gradient(90deg, #00b0ff 0%, #2979ff 100%);
+    height: 100%;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(41, 121, 255, 0.5);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loan-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    align-items: center;
+}
+
+.loan-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.loan-detail-item .label {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.loan-detail-item .value {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.loan-detail-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 2px solid rgba(0, 176, 255, 0.2);
+    padding-left: 10px;
+}
+
+.loan-detail-sub strong {
+    color: var(--text-primary);
+}
+
+/* Metric Colors */
+.income-color { color: var(--accent-income); }
+.expense-color { color: var(--accent-expense); }
+.savings-color { color: var(--accent-savings); }
+.balance-color { color: var(--accent-balance); }
+
+/* Visuals Section (Chart and Calendar side by side inside user card) */
+.visuals-section {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 20px;
+}
+
+@media (max-width: 700px) {
+    .visuals-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-container, .calendar-container {
+    background: rgba(255,255,255,0.01);
+    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chart-container h3, .calendar-container h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.chart-container canvas {
+    max-height: 220px;
+}
+
+/* Calendar Styling */
+.calendar-header {
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.calendar-grid-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-day {
+    aspect-ratio: 1.1;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.cal-day.empty {
+    background: transparent;
+    border: none;
+}
+
+.cal-day.today {
+    border-color: rgba(255,255,255,0.25);
+    color: var(--text-primary);
+}
+
+.cal-day.no-spend {
+    background: rgba(0, 230, 118, 0.08);
+    border-color: rgba(0, 230, 118, 0.2);
+    color: var(--accent-income);
+    font-weight: 700;
+}
+
+.cal-day.no-spend::after {
+    content: "⭐";
+    font-size: 8px;
+    position: absolute;
+    bottom: 2px;
+}
+
+.cal-day.spend {
+    color: var(--text-primary);
+}
