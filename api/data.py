@@ -50,44 +50,8 @@ def get_column_letter(col_idx):
         col_idx = col_idx // 26 - 1
     return letter
 
-# --- Numbers File Parser Adapter ---
-def parse_numbers_to_cells_dict(filepath, sheet_name):
-    import sys
-    user_site = os.path.expanduser('~/Library/Python/3.9/lib/python/site-packages')
-    if user_site not in sys.path:
-        sys.path.insert(0, user_site)
-    
-    try:
-
-    data = _parse_excel_ledger_raw(filepath, target_month)
-    return data
-
 # --- Unified Excel Parser Router (Raw Logic) ---
 def _parse_excel_ledger_raw(file_like, target_month):
-    filepath = file_like
-    if False:
-        import sys
-        user_site = os.path.expanduser('~/Library/Python/3.9/lib/python/site-packages')
-        if user_site not in sys.path:
-            sys.path.insert(0, user_site)
-        try:
-
-        if '가계부입력' in sheet_names:
-            cells = parse_numbers_to_cells_dict(filepath, '가계부입력')
-            return parse_excel_format_b(cells, [], target_month)
-        
-        target_sheet_name = f"{target_month}월"
-        sheet_to_use = None
-        if target_sheet_name in sheet_names:
-            sheet_to_use = target_sheet_name
-        elif f"{target_month}월 결산" in sheet_names:
-            sheet_to_use = f"{target_month}월 결산"
-            
-        if sheet_to_use:
-            cells = parse_numbers_to_cells_dict(filepath, sheet_to_use)
-            return parse_excel_format_a(cells, [], target_month)
-        return []
-
     try:
         with zipfile.ZipFile(file_like, 'r') as zip_ref:
             # 1. Load shared strings
