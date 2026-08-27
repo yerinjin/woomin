@@ -360,13 +360,17 @@ class handler(http.server.BaseHTTPRequestHandler):
                     tx['type'] = '환급'
 
             p_income = 0; p_consumption = 0; p_savings = 0
+            p_categories = {}
             for tx in parents_tx:
                 if tx['type'] == '수입': p_income += tx['amount']
                 elif tx['type'] == '지출':
                     if '카드대금' in tx['category'] or '카드값' in tx['desc'] or '전월카드값' in tx['desc']: continue
                     if '환급' in tx['category'] or '환급금' in tx['category']: continue
                     if '저축' in tx['category'] or '적금' in tx['category'] or '청약' in tx['category']: p_savings += tx['amount']
-                    else: p_consumption += tx['amount']
+                    else: 
+                        p_consumption += tx['amount']
+                        c = tx.get('category', '기타')
+                        p_categories[c] = p_categories.get(c, 0) + tx['amount']
 
             y_income = 0; y_consumption = 0; y_savings = 0
             for tx in yerin_tx:
@@ -384,7 +388,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             parents_stats = {
                 'transactions': parents_tx,
                 'fixedExpenses': [t for t in parents_tx if t['type'] == '지출' and '경조사' not in str(t.get('category','')) and any(k in str(t.get('category','')) for k in fixed_keywords)],
-                'categories': {},
+                'categories': p_categories,
                 'noSpendDays': [],
                 'summary': { 'income': p_income, 'consumption': p_consumption, 'savings': p_savings, 'balance': p_income - p_consumption - p_savings },
                 'loan': parse_parents_loan(selected_parents_path, month),
