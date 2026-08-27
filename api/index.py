@@ -376,17 +376,23 @@ class handler(http.server.BaseHTTPRequestHandler):
                         p_categories[c] = p_categories.get(c, 0) + tx['amount']
 
             y_income = 0; y_consumption = 0; y_savings = 0
+            y_categories = {}
             for tx in yerin_tx:
                 if tx['type'] == '수입': y_income += tx['amount']
                 elif tx['type'] == '지출':
                     if '카드대금' in tx['category'] or '카드값' in tx['desc'] or '전월카드값' in tx['desc']: continue
                     if '환급' in tx['category'] or '환급금' in tx['category']: continue
                     if '저축' in tx['category'] or '적금' in tx['category'] or '청약' in tx['category']: y_savings += tx['amount']
-                    else: y_consumption += tx['amount']
+                    else: 
+                        y_consumption += tx['amount']
+                        c = tx.get('category', '기타')
+                        y_categories[c] = y_categories.get(c, 0) + tx['amount']
 
             import calendar
             try:
                 _, num_days = calendar.monthrange(2026, month)
+                
+                # Parents No-spend
                 expense_days = set()
                 for tx in parents_tx:
                     if tx['type'] == '지출':
@@ -395,8 +401,19 @@ class handler(http.server.BaseHTTPRequestHandler):
                             expense_days.add(day)
                         except: pass
                 no_spend_days = [d for d in range(1, num_days + 1) if d not in expense_days]
+
+                # Yerin No-spend
+                y_expense_days = set()
+                for tx in yerin_tx:
+                    if tx['type'] == '지출':
+                        try:
+                            day = int(tx['date'].split('-')[2])
+                            y_expense_days.add(day)
+                        except: pass
+                y_no_spend_days = [d for d in range(1, num_days + 1) if d not in y_expense_days]
             except Exception:
                 no_spend_days = []
+                y_no_spend_days = []
 
             month_key = f"2026_{month:02d}"
             ai_report_md = AI_REPORTS_DICT.get(month_key, f"아직 {month}월 가계부 분석 데이터가 없습니다.")
@@ -414,6 +431,8 @@ class handler(http.server.BaseHTTPRequestHandler):
             
             yerin_stats = {
                 'transactions': yerin_tx,
+                'noSpendDays': y_no_spend_days,
+                'categories': y_categories,
                 'summary': { 'income': y_income, 'consumption': y_consumption, 'savings': y_savings, 'balance': y_income - y_consumption - y_savings },
                 'loan': None
             }
@@ -423,7 +442,11 @@ class handler(http.server.BaseHTTPRequestHandler):
                 'yerin': yerin_stats,
                 'parents': parents_stats,
                 'ai_report': ai_report_md,
-                'crossCheck': []
+                'crossCheck': {
+                    'matched': [],
+                    'unmatched_yerin': [],
+                    'unmatched_parents': []
+                }
             }
 
             self.send_response(200)
