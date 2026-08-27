@@ -377,16 +377,14 @@ function populateTables(transactions, fixedExpenses) {
 
     // 1. Income
     if (incomes.length === 0) {
-        incomeTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">해당 월에 수입 내역이 없습니다.</td></tr>';
+        incomeTableBody.innerHTML = '<tr><td colspan="4" class="empty-state">해당 월에 수입 내역이 없습니다.</td></tr>';
     } else {
         incomes.forEach(tx => {
             const tr = document.createElement('tr');
-            const combinedDesc = [tx.subcategory, tx.desc].filter(Boolean).join(' / ') || '-';
             tr.innerHTML = `
                 <td>${tx.date}</td>
                 <td><strong>${tx.category}</strong></td>
-                <td>${tx.subcategory || '-'}</td>
-                <td>${tx.desc || '-'}</td>
+                <td>${tx.subcategory || tx.desc || '-'}</td>
                 <td class="text-right savings-text">${formatKRW(tx.amount)}</td>
             `;
             incomeTableBody.appendChild(tr);
@@ -395,7 +393,7 @@ function populateTables(transactions, fixedExpenses) {
 
     // 2. Expense
     if (expenses.length === 0) {
-        expenseTableBody.innerHTML = '<tr><td colspan="6" class="empty-state">해당 월에 지출 내역이 없습니다.</td></tr>';
+        expenseTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">해당 월에 지출 내역이 없습니다.</td></tr>';
     } else {
         expenses.forEach(tx => {
             const tr = document.createElement('tr');
@@ -405,7 +403,6 @@ function populateTables(transactions, fixedExpenses) {
                 <td>${tx.account}</td>
                 <td><span class="category-badge">${tx.category}</span></td>
                 <td>${combinedDesc}</td>
-                <td>${tx.detail || '-'}</td>
                 <td class="text-right expense-text">${formatKRW(tx.amount)}</td>
             `;
             expenseTableBody.appendChild(tr);
