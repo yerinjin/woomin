@@ -166,8 +166,11 @@ def parse_excel_ledger(sheet_type, target_month):
                 ss_xml = zip_ref.read('xl/sharedStrings.xml')
                 ss_root = ET.fromstring(ss_xml)
                 ns = {'main': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
-                for t_elem in ss_root.findall('.//main:t', ns):
-                    shared_strings.append(t_elem.text or '')
+                for si_elem in ss_root.findall('.//main:si', ns):
+                    text_parts = []
+                    for t_elem in si_elem.findall('.//main:t', ns):
+                        text_parts.append(t_elem.text or '')
+                    shared_strings.append(''.join(text_parts))
             except KeyError: pass
 
             sheets_info = {}
@@ -381,6 +384,20 @@ class handler(http.server.BaseHTTPRequestHandler):
                     if '저축' in tx['category'] or '적금' in tx['category'] or '청약' in tx['category']: y_savings += tx['amount']
                     else: y_consumption += tx['amount']
 
+            import calendar
+            try:
+                _, num_days = calendar.monthrange(2026, month)
+                expense_days = set()
+                for tx in parents_tx:
+                    if tx['type'] == '지출':
+                        try:
+                            day = int(tx['date'].split('-')[2])
+                            expense_days.add(day)
+                        except: pass
+                no_spend_days = [f"2026-{month:02d}-{d:02d}" for d in range(1, num_days + 1) if d not in expense_days]
+            except Exception:
+                no_spend_days = []
+
             month_key = f"2026_{month:02d}"
             ai_report_md = AI_REPORTS_DICT.get(month_key, f"아직 {month}월 가계부 분석 데이터가 없습니다.")
 
@@ -389,7 +406,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                 'transactions': parents_tx,
                 'fixedExpenses': [t for t in parents_tx if t['type'] == '지출' and '경조사' not in str(t.get('category','')) and any(k in str(t.get('category','')) for k in fixed_keywords)],
                 'categories': p_categories,
-                'noSpendDays': [],
+                'noSpendDays': no_spend_days,
                 'summary': { 'income': p_income, 'consumption': p_consumption, 'savings': p_savings, 'balance': p_income - p_consumption - p_savings },
                 'loan': parse_parents_loan(selected_parents_path, month),
                 'ai_report': ai_report_md
