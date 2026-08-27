@@ -350,11 +350,16 @@ class handler(http.server.BaseHTTPRequestHandler):
             parents_tx = parse_excel_ledger(selected_parents_path, month)
             yerin_tx = parse_excel_ledger(yerin_xlsx_path, month)
 
+            for tx in parents_tx + yerin_tx:
+                if '환급' in str(tx.get('category', '')):
+                    tx['type'] = '환급'
+
             p_income = 0; p_consumption = 0; p_savings = 0
             for tx in parents_tx:
                 if tx['type'] == '수입': p_income += tx['amount']
                 elif tx['type'] == '지출':
                     if '카드대금' in tx['category'] or '카드값' in tx['desc'] or '전월카드값' in tx['desc']: continue
+                    if '환급' in tx['category'] or '환급금' in tx['category']: continue
                     if '저축' in tx['category'] or '적금' in tx['category'] or '청약' in tx['category']: p_savings += tx['amount']
                     else: p_consumption += tx['amount']
 
@@ -363,16 +368,17 @@ class handler(http.server.BaseHTTPRequestHandler):
                 if tx['type'] == '수입': y_income += tx['amount']
                 elif tx['type'] == '지출':
                     if '카드대금' in tx['category'] or '카드값' in tx['desc'] or '전월카드값' in tx['desc']: continue
+                    if '환급' in tx['category'] or '환급금' in tx['category']: continue
                     if '저축' in tx['category'] or '적금' in tx['category'] or '청약' in tx['category']: y_savings += tx['amount']
                     else: y_consumption += tx['amount']
 
             month_key = f"2026_{month:02d}"
             ai_report_md = AI_REPORTS_DICT.get(month_key, f"아직 {month}월 가계부 분석 데이터가 없습니다.")
 
-            fixed_keywords = ['고정', '보험', '주거', '통신', '공과금', '세금', '회비', '대출', '이자']
+            fixed_keywords = ['고정', '보험', '주거', '통신', '공과금', '세금', '회비', '대출', '이자', '모임']
             parents_stats = {
                 'transactions': parents_tx,
-                'fixedExpenses': [t for t in parents_tx if t['type'] == '지출' and any(k in str(t.get('category','')) for k in fixed_keywords)],
+                'fixedExpenses': [t for t in parents_tx if t['type'] == '지출' and '경조사' not in str(t.get('category','')) and any(k in str(t.get('category','')) for k in fixed_keywords)],
                 'categories': {},
                 'noSpendDays': [],
                 'summary': { 'income': p_income, 'consumption': p_consumption, 'savings': p_savings, 'balance': p_income - p_consumption - p_savings },
