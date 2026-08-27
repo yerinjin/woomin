@@ -445,6 +445,7 @@ body {
     font-weight: 700;
     padding: 14px 18px;
     border-bottom: 2px solid var(--border-accent);
+    white-space: nowrap;
 }
 
 .detail-table td {
@@ -452,6 +453,14 @@ body {
     border-bottom: 1px solid var(--border-color);
     font-weight: 500;
     color: var(--text-primary);
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .detail-table th, .detail-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
 }
 
 .detail-table tbody tr:hover {
