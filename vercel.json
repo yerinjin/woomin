@@ -1,4 +1,8 @@
 {
+  "builds": [
+    { "src": "api/*.py", "use": "@vercel/python" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
   "rewrites": [
     { "source": "/parents.html", "destination": "/api/parents" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
