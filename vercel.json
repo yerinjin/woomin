@@ -1,10 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "api/*.py",
-      "use": "@vercel/python"
-    }
-  ],
   "rewrites": [
     { "source": "/parents.html", "destination": "/api/parents" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
