@@ -482,6 +482,12 @@ body {
     }
 }
 
+.fixed-ai-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
 .loan-progress-card {
     display: flex;
     flex-direction: column;

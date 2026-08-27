@@ -27,7 +27,12 @@ function initTabNavigation() {
             navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
 
-            activeTabTitle.innerText = item.innerText.split(' ').slice(1).join(' ');
+            const iconSpan = item.querySelector('.nav-icon');
+            let titleText = item.innerText;
+            if (iconSpan) {
+                titleText = titleText.replace(iconSpan.innerText, '').trim();
+            }
+            activeTabTitle.innerText = titleText;
 
             panels.forEach(panel => {
                 panel.classList.remove('active');
@@ -129,7 +134,7 @@ function renderParentsDoughnut(categories) {
                 }]
             },
             options: {
-                responsive: true,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } }
             }
         });
@@ -149,7 +154,7 @@ function renderParentsDoughnut(categories) {
             }]
         },
         options: {
-            responsive: true,
+            responsive: true, maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'right',
@@ -240,7 +245,7 @@ async function loadYearlyTrendChart() {
                 ]
             },
             options: {
-                responsive: true,
+                responsive: true, maintainAspectRatio: false,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
