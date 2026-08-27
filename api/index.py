@@ -394,7 +394,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                             day = int(tx['date'].split('-')[2])
                             expense_days.add(day)
                         except: pass
-                no_spend_days = [f"2026-{month:02d}-{d:02d}" for d in range(1, num_days + 1) if d not in expense_days]
+                no_spend_days = [d for d in range(1, num_days + 1) if d not in expense_days]
             except Exception:
                 no_spend_days = []
 
