@@ -99,36 +99,40 @@ def parse_excel_format_a(cells, shared_strings, target_month):
         inc_date = excel_date_to_str(inc_date_val)
         if inc_date and '-' in inc_date and r_data.get('C') == '수입':
             try:
-                amount = float(r_data.get('H', '0') or 0)
-                if amount > 0:
-                    subcategory = r_data.get('E', '').strip()
-                    if subcategory in ['◀', '▶']: subcategory = ''
-                    transactions.append({
-                        'date': inc_date, 'type': '수입',
-                        'category': r_data.get('D', '').strip() or '수입기타',
-                        'subcategory': subcategory,
-                        'desc': r_data.get('F', '').strip(),
-                        'account': '계좌이체', 'amount': amount, 'detail': ''
-                    })
+                dt = datetime.datetime.strptime(inc_date, '%Y-%m-%d')
+                if dt.month == target_month:
+                    amount = float(r_data.get('H', '0') or 0)
+                    if amount > 0:
+                        subcategory = r_data.get('E', '').strip()
+                        if subcategory in ['◀', '▶']: subcategory = ''
+                        transactions.append({
+                            'date': inc_date, 'type': '수입',
+                            'category': r_data.get('D', '').strip() or '수입기타',
+                            'subcategory': subcategory,
+                            'desc': r_data.get('F', '').strip(),
+                            'account': '계좌이체', 'amount': amount, 'detail': ''
+                        })
             except Exception: pass
 
         exp_date_val = r_data.get('J', '')
         exp_date = excel_date_to_str(exp_date_val)
         if exp_date and '-' in exp_date and r_data.get('L'):
             try:
-                amount = float(r_data.get('R', r_data.get('P', '0')) or 0)
-                if amount > 0:
-                    subcategory = r_data.get('M', '').strip()
-                    desc = r_data.get('N', '').strip()
-                    if subcategory in ['◀', '▶']: subcategory = ''
-                    if desc in ['◀', '▶']: desc = ''
-                    transactions.append({
-                        'date': exp_date, 'type': '지출',
-                        'category': r_data.get('L', '').strip() or '기타',
-                        'subcategory': subcategory, 'desc': desc,
-                        'account': r_data.get('K', '').strip() or '계좌이체',
-                        'amount': amount, 'detail': r_data.get('S', '').strip()
-                    })
+                dt = datetime.datetime.strptime(exp_date, '%Y-%m-%d')
+                if dt.month == target_month:
+                    amount = float(r_data.get('R', r_data.get('P', '0')) or 0)
+                    if amount > 0:
+                        subcategory = r_data.get('M', '').strip()
+                        desc = r_data.get('N', '').strip()
+                        if subcategory in ['◀', '▶']: subcategory = ''
+                        if desc in ['◀', '▶']: desc = ''
+                        transactions.append({
+                            'date': exp_date, 'type': '지출',
+                            'category': r_data.get('L', '').strip() or '기타',
+                            'subcategory': subcategory, 'desc': desc,
+                            'account': r_data.get('K', '').strip() or '계좌이체',
+                            'amount': amount, 'detail': r_data.get('S', '').strip()
+                        })
             except Exception: pass
     return transactions
 
