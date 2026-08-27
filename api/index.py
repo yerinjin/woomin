@@ -214,9 +214,11 @@ def parse_parents_loan(sheet_type, month):
 class handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urllib.parse.urlparse(self.path)
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+        route = query_params.get('route', [''])[0]
         
         # --- PARENTS AUTH ENDPOINT ---
-        if self.path.startswith('/api/parents') or self.path == '/parents.html':
+        if route == 'parents' or self.path.startswith('/api/parents') or self.path == '/parents.html':
             auth_header = self.headers.get('Authorization')
             expected_auth = "Basic " + base64.b64encode(b"woomin:1234").decode('ascii')
             
@@ -228,7 +230,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(b"Unauthorized")
                 return
             
-            # Fetch parents.html content from public directory
             html_content = """<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -251,7 +252,6 @@ class handler(http.server.BaseHTTPRequestHandler):
         </header>
 
         <div class="grid-container">
-            <!-- 1. 핵심 요약 카드 -->
             <div class="summary-cards">
                 <div class="card stat-card income">
                     <h3>총 수입</h3>
@@ -267,7 +267,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                 </div>
             </div>
 
-            <!-- 2. 이번 달 가계부 분석 (AI 리포트) -->
             <div class="card ai-report-card full-width">
                 <div class="card-header">
                     <h2>🤖 AI 가계부 분석 리포트</h2>
@@ -277,18 +276,15 @@ class handler(http.server.BaseHTTPRequestHandler):
                 </div>
             </div>
 
-            <!-- 3. 고정 지출 상세 -->
             <div class="card fixed-expenses-card">
                 <div class="card-header">
                     <h2>📌 고정 지출 내역</h2>
                     <span class="badge" id="fixedExpenseTotal">0원</span>
                 </div>
                 <div class="list-container" id="fixedExpensesList">
-                    <!-- JS로 채워짐 -->
                 </div>
             </div>
 
-            <!-- 4. 대출 상환 현황 -->
             <div class="card loan-card">
                 <div class="card-header">
                     <h2>🏦 대출 상환 현황</h2>
@@ -320,7 +316,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         # --- YEARLY TREND ENDPOINT ---
-        if self.path.startswith('/api/yearly-trend'):
+        if route == 'yearly-trend' or self.path.startswith('/api/yearly-trend'):
             trend_data = []
             for m in range(1, 13):
                 txs = parse_excel_ledger("parents", m)
@@ -345,8 +341,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         # --- MAIN DATA ENDPOINT ---
-        if self.path.startswith('/api/data'):
-            query_params = urllib.parse.parse_qs(parsed_url.query)
+        if route == 'data' or self.path.startswith('/api/data'):
             month = int(query_params.get('month', [8])[0])
 
             selected_parents_path = "parents_past" if month <= 4 else "parents"
