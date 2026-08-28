@@ -20,10 +20,20 @@ AI_REPORTS_DICT = {
     "2026_06": "# 🤖 2026년 6월 가계부 AI 분석 리포트 (부모님 전용)\n\n> **작성일:** 2026년 8월 26일 (자동 생성됨)\n> **대상:** 부모님(우민님) 가계부 단독 분석\n\n---\n\n## 1. 💡 6월 재무 AI 분석 포인트\n\n1. **상반기 결산 및 쿨다운 시기**\n   - 5월의 폭풍 같은 지출이 지나고 다시 안정기를 되찾았습니다. 상반기(1~6월) 대출 상환액을 꾸준히 지켜오신 점이 훌륭합니다.\n   - 에어컨 가동이 시작되면서 공과금(주거통신 카테고리)이 소폭 상승하기 시작했습니다.\n\n2. **개선 추천 사항**\n   - 7~8월 여름 휴가비 마련을 위해 6월의 변동 지출(외식, 생활용품)을 평소보다 10% 더 조이는 것이 좋습니다.\n   - 고정 지출 중 해지가 가능한 불필요한 유료 구독이나 TV 부가서비스가 없는지 상반기 정리를 권장합니다.\n",
     "2026_07": "# 🤖 2026년 7월 가계부 AI 분석 리포트 (부모님 전용)\n\n> **작성일:** 2026년 8월 26일 (자동 생성됨)\n> **대상:** 부모님(우민님) 가계부 단독 분석\n\n---\n\n## 1. 💡 7월 재무 AI 분석 포인트\n\n1. **여름 휴가 및 냉방비 상승 방어**\n   - 본격적인 무더위로 인해 주거통신 카테고리의 전기요금 비중이 눈에 띄게 증가했습니다.\n   - 휴가 관련 지출(문화생활비, 유류교통비)이 발생했지만 예산 내에서 적절히 방어되고 있습니다.\n\n2. **개선 추천 사항**\n   - 의료비 지출(오케이마취통증의학과 등)이 잦은 시기입니다. 덥고 습한 날씨에 건강 관리를 최우선으로 하시고 실손 보험 청구를 잊지 마세요.\n   - 하반기 재산세 납부 등 굵직한 세금 이슈가 있으니 통장 잔고를 일정 수준 이상 유지하세요.\n",
     "2026_08": "# 🤖 2026년 8월 가계부 AI 분석 리포트 (부모님 전용)\n\n> **작성일:** 2026년 8월 26일 (자동 생성됨)\n> **대상:** 부모님(우민님) 가계부 단독 분석\n\n---\n\n## 1. 💡 8월 재무 AI 분석 포인트\n\n1. **막바지 더위와 지출 패턴 안정화**\n   - 이번 달은 '기타' 및 '생활용품비'의 자잘한 누수 없이 식비와 고정 지출(연시/종란보험) 위주로 깔끔하게 정리된 달입니다.\n   - 차량 주유비 및 신일자동차서비스 결제 건이 확인되며, 이동이 많았던 달로 분석됩니다.\n\n2. **개선 추천 사항**\n   - 대출 원금 잔액이 1억 5천만 원대로 진입했습니다! 매월 이자로 빠져나가는 금액을 조금이라도 더 원금 상환으로 돌릴 수 있다면 이자 비용을 크게 절약할 수 있습니다.\n   - 9월 추석 명절이 다가오고 있습니다. 8월 말 남은 예산은 모두 9월 명절 비상금으로 비축해 두세요.\n",
-    "2026_Q1": "# 🤖 2026년 1분기 (1~3월) 가계부 리포트 (부모님 전용)\n\n> **작성일:** 2026년 8월 26일 (자동 생성됨)\n> **대상:** 부모님(우민님) 가계부 단독 분석\n\n---\n\n## 1. 📈 1분기 재무 흐름 총평\n- 1분기(1~3월)는 새해 첫 분기로 명절 지출 변동이 컸으나 안정적인 방어가 돋보였습니다.\n- 우민님의 경우 보험료 고정 지출과 의료비 지출에 대한 예산 재정비가 하반기 주요 과제입니다.\n\n## 2. 💡 AI 추천 핵심 액션\n1. 불필요한 구독 서비스 해지 및 통신비/결합할인 점검\n2. 대출 이자 상환 비중을 줄이기 위한 원금 추가 상환 액션 계획 수립\n"
+    "2026_Q1": "# 🤖 2026년 1분기 (1~3월) 가계부 리포트 (부모님 전용)\n\n> **작성일:** 2026년 8월 26일 (자동 생성됨)\n> **대상:** 부모님(우민님) 가계부 단독 분석\n\n---\n\n## 1. 📈 1분기 재무 흐름 총평\n- 1분기(1~3월)는 새해 첫 분기로 명절 지출 변동이 컸으나 안정적인 방어가 돋보였습니다.\n- 우민님의 경우 보험료 고정 지출과 의료비 지출에 대한 예산 재정비가 하반기 주요 과제입니다.\n\n## 2. 💡 AI 추천 핵심 액션\n1. 불필요한 구독 서비스 해지 및 통신비/결합할인 점검\n2. 대출 이자 상환 비중을 줄이기 위한 원금 추가 상환 액션 계획 수립\n",
+    "2026_09": "# 🤖 2026년 9월 가계부 AI 분석 및 하반기 예산 전략\n\n> **작성일:** 2026년 8월 28일 (자동 생성됨)\n> **대상:** 부모님(우민님) 가계부 단독 분석\n\n---\n\n## 1. 💡 하반기(9월~12월) 예산 관리 방향\n\n1. **명절(추석) 지출 1차 방어**\n   - 9월은 추석 명절로 인해 **경조사비와 식비가 일시적으로 폭증**하는 달입니다. 평월 대비 최소 30~50만 원의 추가 지출이 예상되므로, 8월에 이월된 잉여 자금을 전액 추석 방어용으로 비축해야 합니다.\n\n2. **대출 원금 집중 상환 (이자 다이어트)**\n   - 현재 대출 잔액이 1억 5,900만 원대로 진입했습니다. 매월 발생하는 이자 부담을 줄이는 것이 가장 확실한 재테크입니다.\n   - **전략:** 매월 발생하는 '여유 자금' 중 절반은 비상금으로, 나머지 절반은 무조건 **대출 원금 추가 상환**에 투입하세요.\n\n3. **변동 지출(생활비) 한도 설정**\n   - 고정 지출(보험료, 주거/통신비 등)은 잘 유지되고 있으나, 식비와 생활용품비에서 변동폭이 다소 있습니다.\n   - 가족이 함께 다음 주 식재료 예산을 미리 정해두는 '주간 식비 한도제'를 도입해보세요.\n\n## 2. 🎯 다음 달 핵심 목표\n- **추석 연휴 방어:** 명절 예산 펑크 내지 않고 현금 흐름 내에서 방어하기\n- **추가 상환:** 여유 자금으로 대출 원금 10만 원이라도 더 갚기\n"
 }
 
+SHEET_CACHE = {}
+
 def fetch_google_sheet(sheet_type):
+    global SHEET_CACHE
+    now = time.time()
+    if sheet_type in SHEET_CACHE:
+        cached_time, cached_data = SHEET_CACHE[sheet_type]
+        if now - cached_time < 3600: # 1 hour cache
+            return io.BytesIO(cached_data)
+            
     urls = {
         "parents": "https://docs.google.com/spreadsheets/d/1M56YkKcj1i0KNfRNiubFUMUAEe922y9JoLr-ylGzF0k/export?format=xlsx",
         "parents_past": "https://docs.google.com/spreadsheets/d/18R3zBKaoX6hhcYQFYVY9rEKakw5RfUCo/export?format=xlsx",
@@ -35,7 +45,9 @@ def fetch_google_sheet(sheet_type):
     
     req = urllib.request.Request(url)
     resp = urllib.request.urlopen(req)
-    return io.BytesIO(resp.read())
+    data = resp.read()
+    SHEET_CACHE[sheet_type] = (now, data)
+    return io.BytesIO(data)
 
 def excel_date_to_str(excel_date_num):
     try:
@@ -343,7 +355,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json; charset=utf-8')
             self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            self.send_header('Cache-Control', 's-maxage=3600, stale-while-revalidate')
             self.end_headers()
             self.wfile.write(json.dumps(trend_data, ensure_ascii=False).encode('utf-8'))
             return
@@ -452,7 +464,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json; charset=utf-8')
             self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            self.send_header('Cache-Control', 's-maxage=3600, stale-while-revalidate')
             self.end_headers()
             self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
             return
