@@ -453,11 +453,14 @@ async function loadParentsData(month) {
 
         // Render Asset Accounts
         if (pData.accounts && pData.accounts.length > 0) {
-            let safeboxAmt = 0;
+            let totalKakaoAmt = 0;
             let assetHtml = '';
             pData.accounts.forEach(acc => {
                 const isSafebox = acc.name.includes('세이프박스') || acc.type.includes('세이프');
-                if (isSafebox) safeboxAmt += acc.amount;
+                const isKakaoChecking = acc.name.includes('생활비') && (acc.type.includes('입출금') || acc.bank.includes('우민'));
+                const isKakaoBank = isSafebox || isKakaoChecking || acc.bank.includes('카뱅') || acc.bank.includes('우민');
+                
+                if (isKakaoBank) totalKakaoAmt += acc.amount;
                 
                 const bankEmoji = (acc.bank.includes('우민') || acc.bank.includes('카뱅') || acc.bank.includes('국민')) ? '🏦' : '💳';
                 assetHtml += `
@@ -472,7 +475,7 @@ async function loadParentsData(month) {
             });
             
             const safeBoxEl = document.getElementById('safeBoxVal');
-            if (safeBoxEl) safeBoxEl.innerText = formatKRW(safeboxAmt);
+            if (safeBoxEl) safeBoxEl.innerText = formatKRW(totalKakaoAmt);
             
             const assetContainer = document.getElementById('assetListContainer');
             if (assetContainer) assetContainer.innerHTML = assetHtml;
