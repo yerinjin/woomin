@@ -211,7 +211,7 @@ async function loadYearlyTrendChart() {
                 datasets: [
                     {
                         type: 'line',
-                        label: '추정 저축액 (당월 잔액)',
+                        label: '남은 돈',
                         data: balances,
                         borderColor: '#10b981',
                         borderWidth: 3,

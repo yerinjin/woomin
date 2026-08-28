@@ -69,7 +69,7 @@
             <section class="stats-row">
                 <div class="stat-card savings-border">
                     <div class="stat-info">
-                        <h3>당월 잔액 (수입 - 지출)</h3>
+                        <h3>이번 달 남은 돈 (수입 - 지출)</h3>
                         <p class="stat-value savings-text" id="balanceVal">0원</p>
                     </div>
                     <span class="stat-emoji">💰</span>
@@ -91,14 +91,7 @@
                     <span class="stat-emoji">🛒</span>
                 </div>
 
-                <div class="stat-card loan-border">
-                    <div class="stat-info">
-                        <h3>이번 달 대출 상환</h3>
-                        <p class="stat-value loan-text" id="loanVal">0원</p>
-                    </div>
-                    <span class="stat-emoji">🏠</span>
-                </div>
-                
+
                 <div class="stat-card asset-border">
                     <div class="stat-info">
                         <h3>비상금 잔액 (카뱅)</h3>
@@ -114,8 +107,8 @@
                 <!-- Yearly Flow Trend Chart Card (Matching Mockup combination) -->
                 <div class="panel-card trend-panel-card" style="margin-bottom: 25px;">
                     <div class="panel-card-header">
-                        <h3>📈 연간 월별 흐름 추이 (수입 ㆍ 지출 ㆍ 추정 저축액)</h3>
-                        <span class="header-help">1월부터 12월까지의 자금 흐름 변동 추이 그래프입니다. (바 그래프: 수입/지출, 꺾은선: 저축액)</span>
+                        <h3>📈 연간 월별 흐름 추이 (수입 ㆍ 지출 ㆍ 남은 돈)</h3>
+                        <span class="header-help">1월부터 12월까지의 자금 흐름 변동 추이 그래프입니다. (바 그래프: 수입/지출, 꺾은선: 남은 돈)</span>
                     </div>
                     <div class="trend-chart-wrapper" style="height: 340px; position: relative;">
                         <canvas id="trendChart"></canvas>
