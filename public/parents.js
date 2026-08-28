@@ -449,6 +449,39 @@ async function loadParentsData(month) {
         renderParentsCalendar(2026, month, pData.noSpendDays);
         populateTables(pData.transactions, pData.fixedExpenses);
 
+        // Render Asset Accounts
+        if (pData.accounts && pData.accounts.length > 0) {
+            let safeboxAmt = 0;
+            let assetHtml = '';
+            pData.accounts.forEach(acc => {
+                const isSafebox = acc.name.includes('세이프박스') || acc.type.includes('세이프');
+                if (isSafebox) safeboxAmt += acc.amount;
+                
+                const bankEmoji = (acc.bank.includes('우민') || acc.bank.includes('카뱅') || acc.bank.includes('국민')) ? '🏦' : '💳';
+                assetHtml += `
+                    <div class="asset-item-card">
+                        <div class="asset-item-info">
+                            <h4>${bankEmoji} ${acc.name}</h4>
+                            <p>${acc.bank} | ${acc.type}</p>
+                        </div>
+                        <div class="asset-item-val ${isSafebox ? 'safebox-highlight' : ''}">${formatKRW(acc.amount)}</div>
+                    </div>
+                `;
+            });
+            
+            const safeBoxEl = document.getElementById('safeBoxVal');
+            if (safeBoxEl) safeBoxEl.innerText = formatKRW(safeboxAmt);
+            
+            const assetContainer = document.getElementById('assetListContainer');
+            if (assetContainer) assetContainer.innerHTML = assetHtml;
+        } else {
+            const safeBoxEl = document.getElementById('safeBoxVal');
+            if (safeBoxEl) safeBoxEl.innerText = '0원';
+            
+            const assetContainer = document.getElementById('assetListContainer');
+            if (assetContainer) assetContainer.innerHTML = '<p style="padding:15px; color:#64748b; text-align:center;">자산 데이터를 불러오는 중이거나 기록이 없습니다.</p>';
+        }
+
         // Render AI Report
         const aiReportContainer = document.getElementById('ai-report-content');
         if (aiReportContainer) {

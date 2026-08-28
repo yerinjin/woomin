@@ -98,6 +98,14 @@
                     </div>
                     <span class="stat-emoji">🏠</span>
                 </div>
+                
+                <div class="stat-card asset-border">
+                    <div class="stat-info">
+                        <h3>비상금 잔액 (카뱅)</h3>
+                        <p class="stat-value asset-text" id="safeBoxVal">0원</p>
+                    </div>
+                    <span class="stat-emoji">💎</span>
+                </div>
             </section>
 
             <!-- TAB 1: 핵심 요약 (Overview Tab) -->
@@ -115,6 +123,17 @@
                 </div>
 
                 <div class="overview-grid">
+                    <!-- Asset Balance Panel -->
+                    <div class="panel-card asset-panel" style="grid-column: 1 / -1; background: linear-gradient(to right, #f8fafc, #ffffff);">
+                        <div class="panel-card-header">
+                            <h3>💎 내 통장 자산 현황</h3>
+                            <span class="header-help">가계부 계좌현황 시트에 기록된 실시간 통장 잔고입니다.</span>
+                        </div>
+                        <div class="asset-list-container" id="assetListContainer">
+                            <p style="padding:15px; color:#64748b; text-align:center;">자산 데이터를 불러오는 중이거나 기록이 없습니다.</p>
+                        </div>
+                    </div>
+                    
                     <!-- Chart Column -->
                     <div class="panel-card chart-panel">
                         <div class="panel-card-header">
