@@ -299,11 +299,13 @@ async function loadYearlyTrendChart() {
 // Bind SVG Loan Progress Gauge
 function bindLoanGauge(loan, month) {
     if (!loan) {
-        document.getElementById('loanVal').innerText = '0원';
+        const loanValEl = document.getElementById('loanVal');
+        if (loanValEl) loanValEl.innerText = '0원';
         return;
     }
     
-    document.getElementById('loanVal').innerText = formatKRW(loan.totalPayment);
+    const loanValEl = document.getElementById('loanVal');
+    if (loanValEl) loanValEl.innerText = formatKRW(loan.totalPayment);
 
     const total = loan.totalLoan;
     const balance = loan.balance;
