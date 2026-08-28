@@ -185,7 +185,7 @@ function renderParentsDoughnut(categories) {
 // Render Combination Bar + Line Chart (Matching User Mockup)
 async function loadYearlyTrendChart() {
     try {
-        const response = await fetch('/api/yearly-trend');
+        const response = await fetch(`/api/yearly-trend?_t=${Date.now()}`);
         if (!response.ok) {
             throw new Error(`Trend API error: ${response.status}`);
         }
@@ -415,7 +415,7 @@ function populateTables(transactions, fixedExpenses) {
 // Fetch Parents Account Data
 async function loadParentsData(month) {
     try {
-        const response = await fetch(`/api/data?month=${month}`);
+        const response = await fetch(`/api/data?month=${month}&_t=${Date.now()}`);
         if (!response.ok) {
             throw new Error(`API load failure: ${response.status}`);
         }
