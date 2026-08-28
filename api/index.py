@@ -221,6 +221,91 @@ def parse_excel_ledger(sheet_type, target_month):
         print(f"Error parsing Excel file {sheet_type}: {e}")
         return []
 
+def parse_excel_accounts(cells):
+    rows = {}
+    for ref, val in cells.items():
+        r_idx = int(''.join(filter(str.isdigit, ref)) or 0)
+        c_idx = ''.join(filter(str.isalpha, ref))
+        if r_idx not in rows:
+            rows[r_idx] = {}
+        rows[r_idx][c_idx] = val
+        
+    accounts = []
+    for r in sorted(rows.keys()):
+        r_data = rows[r]
+        if r < 8: continue
+        
+        acct_name = r_data.get('F', '').strip()
+        if not acct_name: continue
+        
+        bank = r_data.get('C', '').strip()
+        acct_type = r_data.get('D', '').strip()
+        amount_str = str(r_data.get('K', '0')).replace(',', '')
+        try:
+            amount = float(amount_str)
+        except:
+            amount = 0
+            
+        if amount > 0:
+            accounts.append({
+                'bank': bank,
+                'type': acct_type,
+                'name': acct_name,
+                'amount': amount
+            })
+    return accounts
+
+def parse_parents_accounts(sheet_type):
+    file_like = fetch_google_sheet(sheet_type)
+    if not file_like: return []
+    try:
+        with zipfile.ZipFile(file_like, 'r') as zip_ref:
+            shared_strings = []
+            try:
+                ss_xml = zip_ref.read('xl/sharedStrings.xml')
+                ss_root = ET.fromstring(ss_xml)
+                ns = {'main': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+                for si_elem in ss_root.findall('.//main:si', ns):
+                    text_parts = []
+                    for t_elem in si_elem.findall('.//main:t', ns):
+                        text_parts.append(t_elem.text or '')
+                    shared_strings.append(''.join(text_parts))
+            except KeyError: pass
+
+            sheets_info = {}
+            wb_rels_xml = zip_ref.read('xl/_rels/workbook.xml.rels')
+            wb_rels_root = ET.fromstring(wb_rels_xml)
+            ns_rel = {'rel': 'http://schemas.openxmlformats.org/package/2006/relationships'}
+            for rel in wb_rels_root.findall('.//rel:Relationship', ns_rel):
+                sheets_info[rel.get('Id')] = rel.get('Target')
+
+            workbook_xml = zip_ref.read('xl/workbook.xml')
+            wb_root = ET.fromstring(workbook_xml)
+            ns_main = {'main': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+            
+            sheets = {}
+            for sheet_elem in wb_root.findall('.//main:sheet', ns_main):
+                name = unicodedata.normalize('NFC', sheet_elem.get('name'))
+                r_id = sheet_elem.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                sheets[name] = r_id
+                
+            target_sheet_name = None
+            for name in sheets:
+                if '계좌' in name or '자산' in name:
+                    target_sheet_name = name
+                    break
+                    
+            if not target_sheet_name: return []
+            
+            r_id = sheets[target_sheet_name]
+            sheet_file = sheets_info.get(r_id, '')
+            if not sheet_file.startswith('xl/'): sheet_file = 'xl/' + sheet_file
+            cells = get_sheet_cells_dict(zip_ref, sheet_file, shared_strings)
+            return parse_excel_accounts(cells)
+    except Exception as e:
+        print(f"Error parsing accounts: {e}")
+        return []
+
 def parse_parents_loan(sheet_type, month):
     return {
         'totalLoan': 217000000.0,
@@ -438,6 +523,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                 'noSpendDays': no_spend_days,
                 'summary': { 'income': p_income, 'consumption': p_consumption, 'savings': p_savings, 'balance': p_income - p_consumption - p_savings },
                 'loan': parse_parents_loan(selected_parents_path, month),
+                'accounts': parse_parents_accounts(selected_parents_path),
                 'ai_report': ai_report_md
             }
             
