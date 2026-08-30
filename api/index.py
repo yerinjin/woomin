@@ -99,7 +99,7 @@ def excel_date_to_str(excel_date_num):
         val = float(excel_date_num)
         if val > 60:
             val -= 1
-        dt = datetime.date(1899, 12, 30) + datetime.timedelta(days=val)
+        dt = datetime.date(1899, 12, 30) + datetime.timedelta(days=val+1)
         return dt.strftime('%Y-%m-%d')
     except Exception:
         return str(excel_date_num)
