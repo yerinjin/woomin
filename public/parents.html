@@ -307,6 +307,30 @@
                                 <span class="num-value warn-text" id="loanStatInterest">0원</span>
                             </div>
                         </div>
+                        
+                        <!-- Yearly Loan Stats Slider -->
+                        <div class="yearly-loan-carousel" style="margin-top: 20px; border-top: 1px dashed #e2e8f0; padding-top: 15px;">
+                            <div class="carousel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 10px;">
+                                <button id="prevYearLoan" style="background:none; border:none; font-size: 20px; cursor: pointer; color: #64748b; padding: 0 10px;">‹</button>
+                                <span id="currentYearLoanLabel" style="font-weight: 600; color: #334155; font-size: 15px;">2026년 누적 상환</span>
+                                <button id="nextYearLoan" style="background:none; border:none; font-size: 20px; cursor: pointer; color: #64748b; padding: 0 10px;">›</button>
+                            </div>
+                            <div class="carousel-content loan-numbers-grid" style="background: #f8fafc; border-radius: 8px; padding: 12px;">
+                                <div class="loan-num-item">
+                                    <span class="num-label" style="color: #64748b;">누적 갚은 원금</span>
+                                    <span class="num-value savings-text" id="yearlyPrincipal">0원</span>
+                                </div>
+                                <div class="loan-num-item">
+                                    <span class="num-label" style="color: #64748b;">누적 이자 비용</span>
+                                    <span class="num-value warn-text" id="yearlyInterest">0원</span>
+                                </div>
+                                <div class="loan-num-item" style="border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 5px;">
+                                    <span class="num-label" style="font-weight: 600; color: #1e293b;">총 누적 상환합계</span>
+                                    <span class="num-value expense-text" id="yearlyTotal">0원</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </section>

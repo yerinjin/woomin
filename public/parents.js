@@ -3,6 +3,11 @@ let parentsChart = null;
 let trendChartInstance = null;
 let currentMonth = 8; // Default to August
 
+// Yearly Loan Slider State
+let yearlyLoanYears = [];
+let yearlyLoanData = {};
+let currentYearlyLoanIndex = 0;
+
 // DOM Elements
 const monthPillsContainer = document.getElementById('monthPills');
 const incomeTableBody = document.getElementById('incomeTableBody');
@@ -297,7 +302,7 @@ async function loadYearlyTrendChart() {
 }
 
 // Bind SVG Loan Progress Gauge
-function bindLoanGauge(loan, month) {
+function bindLoanGauge(loan, month, yearlyStats) {
     if (!loan) {
         const loanValEl = document.getElementById('loanVal');
         if (loanValEl) loanValEl.innerText = '0원';
@@ -344,6 +349,51 @@ function bindLoanGauge(loan, month) {
         circleOverview.style.strokeDasharray = `${circumference} ${circumference}`;
         circleOverview.style.strokeDashoffset = offset;
     }
+
+    // 3. Yearly Loan Stats Slider Logic
+    if (yearlyStats && Object.keys(yearlyStats).length > 0) {
+        yearlyLoanData = yearlyStats;
+        yearlyLoanYears = Object.keys(yearlyStats).sort();
+        currentYearlyLoanIndex = yearlyLoanYears.length - 1; // Default to latest year
+        renderYearlyLoanSlider();
+        
+        const prevBtn = document.getElementById('prevYearLoan');
+        const nextBtn = document.getElementById('nextYearLoan');
+        
+        if (prevBtn) {
+            prevBtn.onclick = () => {
+                if (currentYearlyLoanIndex > 0) {
+                    currentYearlyLoanIndex--;
+                    renderYearlyLoanSlider();
+                }
+            };
+        }
+        if (nextBtn) {
+            nextBtn.onclick = () => {
+                if (currentYearlyLoanIndex < yearlyLoanYears.length - 1) {
+                    currentYearlyLoanIndex++;
+                    renderYearlyLoanSlider();
+                }
+            };
+        }
+    }
+}
+
+function renderYearlyLoanSlider() {
+    if (yearlyLoanYears.length === 0) return;
+    const year = yearlyLoanYears[currentYearlyLoanIndex];
+    const data = yearlyLoanData[year];
+    
+    document.getElementById('currentYearLoanLabel').innerText = `${year}년 누적 상환`;
+    document.getElementById('yearlyPrincipal').innerText = formatKRW(data.principal);
+    document.getElementById('yearlyInterest').innerText = formatKRW(data.interest);
+    document.getElementById('yearlyTotal').innerText = formatKRW(data.total);
+    
+    // Update button states
+    const prevBtn = document.getElementById('prevYearLoan');
+    const nextBtn = document.getElementById('nextYearLoan');
+    if (prevBtn) prevBtn.style.opacity = currentYearlyLoanIndex === 0 ? '0.3' : '1';
+    if (nextBtn) nextBtn.style.opacity = currentYearlyLoanIndex === yearlyLoanYears.length - 1 ? '0.3' : '1';
 }
 
 // Populate Tables
@@ -446,7 +496,7 @@ async function loadParentsData(month) {
             balElem.className = 'stat-value savings-text';
         }
 
-        bindLoanGauge(pData.loan, pData.isFallback ? pData.fallbackMonth : month);
+        bindLoanGauge(pData.loan, pData.isFallback ? pData.fallbackMonth : month, pData.yearlyLoanStats);
         renderParentsDoughnut(pData.categories);
         renderParentsCalendar(2026, month, pData.noSpendDays);
         populateTables(pData.transactions, pData.fixedExpenses);
