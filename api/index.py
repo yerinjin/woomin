@@ -524,9 +524,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             parents_tx = parse_excel_ledger(selected_parents_path, month)
             yerin_tx = parse_excel_ledger(yerin_xlsx_path, month)
 
-            for tx in parents_tx + yerin_tx:
-                if '환급' in str(tx.get('category', '')):
-                    tx['type'] = '환급'
+            # Removed aggressive type overwriting for '환급'
 
             p_income = 0; p_consumption = 0; p_savings = 0
             p_categories = {}
