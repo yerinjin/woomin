@@ -553,6 +553,9 @@ async function loadParentsData(month) {
         }
     } catch (err) {
         console.error("Error fetching parents account book data:", err);
+    } finally {
+        activePanel.style.opacity = originalOpacity;
+        activePanel.style.pointerEvents = 'auto';
     }
 }
 
