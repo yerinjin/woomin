@@ -466,11 +466,6 @@ function populateTables(transactions, fixedExpenses) {
 
 // Fetch Parents Account Data
 async function loadParentsData(month) {
-    const activePanel = document.querySelector('.tab-panel.active') || document.body;
-    const originalOpacity = activePanel.style.opacity;
-    activePanel.style.opacity = '0.5';
-    activePanel.style.pointerEvents = 'none';
-
     try {
         const response = await fetch(`/api/data?month=${month}&_t=${Date.now()}`);
         if (!response.ok) {
@@ -553,9 +548,6 @@ async function loadParentsData(month) {
         }
     } catch (err) {
         console.error("Error fetching parents account book data:", err);
-    } finally {
-        activePanel.style.opacity = originalOpacity;
-        activePanel.style.pointerEvents = 'auto';
     }
 }
 
