@@ -163,16 +163,16 @@ def parse_excel_format_a(cells, shared_strings, target_month):
                     amount_str = val_i if val_i else val_h
                     amount = float(amount_str.replace(',', '') or 0)
                     if amount > 0:
-                        subcategory = r_data.get('E', '').strip()
-                        if subcategory in ['◀', '▶']: subcategory = ''
                         transactions.append({
                             'date': inc_date, 'type': '수입',
                             'category': r_data.get('D', '').strip() or '수입기타',
-                            'subcategory': subcategory,
-                            'desc': r_data.get('F', '').strip(),
+                            'subcategory': '',
+                            'desc': r_data.get('E', '').strip(),
                             'account': '계좌이체', 'amount': amount, 'detail': ''
                         })
-            except Exception: pass
+            except Exception as e: 
+                print(f"Income parse error on row {r}: {e}, data: {r_data}")
+                pass
 
         exp_date_val = r_data.get('J', '')
         exp_date = excel_date_to_str(exp_date_val)
