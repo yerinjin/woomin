@@ -76,7 +76,7 @@ def fetch_google_sheet(sheet_type):
     now = time.time()
     if sheet_type in SHEET_CACHE:
         cached_time, cached_data = SHEET_CACHE[sheet_type]
-        if now - cached_time < 3600: # 1 hour cache
+        if now - cached_time < 30: # 30초 캐시 (기존 1시간에서 대폭 축소)
             return io.BytesIO(cached_data)
             
     urls = {
@@ -620,7 +620,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json; charset=utf-8')
             self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Cache-Control', 's-maxage=3600, stale-while-revalidate')
+            self.send_header('Cache-Control', 's-maxage=60, stale-while-revalidate=86400')
             self.end_headers()
             self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
             return
