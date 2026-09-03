@@ -158,7 +158,10 @@ def parse_excel_format_a(cells, shared_strings, target_month):
             try:
                 dt = datetime.datetime.strptime(inc_date, '%Y-%m-%d')
                 if dt.month == target_month:
-                    amount = float(r_data.get('H', '0') or 0)
+                    val_i = str(r_data.get('I', '')).strip()
+                    val_h = str(r_data.get('H', '')).strip()
+                    amount_str = val_i if val_i else val_h
+                    amount = float(amount_str or 0)
                     if amount > 0:
                         subcategory = r_data.get('E', '').strip()
                         if subcategory in ['◀', '▶']: subcategory = ''
