@@ -1,7 +1,7 @@
 // Global Chart and State Instances
 let parentsChart = null;
 let trendChartInstance = null;
-let currentMonth = 8; // Default to August
+let currentMonth = new Date().getMonth() + 1; // Default to current month
 
 // Yearly Loan Slider State
 let yearlyLoanYears = [];
