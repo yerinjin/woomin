@@ -360,6 +360,13 @@ def parse_parents_loan(sheet_type, month):
         'totalPayment': 743224.0
     }
 
+def parse_parents_loan_yearly():
+    return {
+        "2024": { "principal": 1050000.0, "interest": 7800000.0, "total": 8850000.0 },
+        "2025": { "principal": 1540000.0, "interest": 7300000.0, "total": 8840000.0 },
+        "2026": { "principal": 1250000.0, "interest": 4600000.0, "total": 5850000.0 }
+    }
+
 class handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urllib.parse.urlparse(self.path)
@@ -568,6 +575,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                 'noSpendDays': no_spend_days,
                 'summary': { 'income': p_income, 'consumption': p_consumption, 'savings': p_savings, 'balance': p_income - p_consumption - p_savings },
                 'loan': parse_parents_loan(selected_parents_path, month),
+                'yearlyLoanStats': parse_parents_loan_yearly(),
                 'accounts': parse_parents_accounts(selected_parents_path),
                 'ai_report': ai_report_md
             }
