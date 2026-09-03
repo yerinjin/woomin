@@ -352,19 +352,32 @@ def parse_parents_accounts(sheet_type):
         return []
 
 def parse_parents_loan(sheet_type, month):
+    # 실제 2026년 8월까지의 정확한 잔액 계산 적용
+    # 2026년 8월 거래 후 잔액: 159,938,771원 (원금 141,595원 차감 기준)
+    balance = 162461982.0 # 5월 기준
+    if month >= 6: balance -= (2100000 + 140546)
+    if month >= 7: balance -= 141070
+    if month >= 8: balance -= 141595 # 8월까지 159,938,771원
+
+    # 향후 실제 추가 상환이 발생하면 여기에 작성하시면 됩니다.
+    # extra_principal = 0
+    # if month == 9: extra_principal = 2000000.0
+    # if month >= 9: balance -= extra_principal
+
     return {
         'totalLoan': 217000000.0,
-        'balance': 159222836.0 if month >= 8 else 162461982.0,
-        'principal': 144269.0,
-        'interest': 598954.0,
-        'totalPayment': 743224.0
+        'balance': balance,
+        'principal': 141595.0, # 기본 상환 원금 (임시로 8월과 동일하게 세팅)
+        'interest': 596299.0, # 기본 상환 이자 (임시로 8월과 동일하게 세팅)
+        'totalPayment': (141595.0 + 596299.0)
     }
 
 def parse_parents_loan_yearly():
     return {
-        "2024": { "principal": 1050000.0, "interest": 7800000.0, "total": 8850000.0 },
-        "2025": { "principal": 1540000.0, "interest": 7300000.0, "total": 8840000.0 },
-        "2026": { "principal": 1250000.0, "interest": 4600000.0, "total": 5850000.0 }
+        "2023": { "principal": 16308003.0, "interest": 3985814.0, "total": 20293817.0 },
+        "2024": { "principal": 34494031.0, "interest": 8103679.0, "total": 42597710.0 },
+        "2025": { "principal": 3191938.0, "interest": 7966228.0, "total": 11158166.0 },
+        "2026": { "principal": 3227257.0, "interest": 5429867.0, "total": 8657124.0 } # 8월까지 누적
     }
 
 class handler(http.server.BaseHTTPRequestHandler):
