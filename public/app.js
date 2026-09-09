@@ -31,6 +31,31 @@ function initMonthSelector() {
     }
 }
 
+// 1-1. Initialize Stock Tabs
+function initStockTabs() {
+    const tabButtons = document.querySelectorAll('.stk-tab-btn');
+    const tabContents = {
+        'kakao': document.getElementById('tab_kakao'),
+        'toss_us': document.getElementById('tab_toss_us'),
+        'toss_kr': document.getElementById('tab_toss_kr'),
+        'isa': document.getElementById('tab_isa')
+    };
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            Object.entries(tabContents).forEach(([k, elem]) => {
+                if (elem) {
+                    elem.style.display = (k === targetTab) ? 'block' : 'none';
+                }
+            });
+        });
+    });
+}
+
 // 2. Render 2026~2033 Asset Growth Projection Chart
 function renderGrowthChart() {
     const canvas = document.getElementById('growthChart');
@@ -382,6 +407,7 @@ async function loadDashboardData(month) {
 // App Initialization
 window.addEventListener('DOMContentLoaded', () => {
     initMonthSelector();
+    initStockTabs();
     renderGrowthChart();
     loadDashboardData(currentMonth);
 });
