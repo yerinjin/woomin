@@ -759,13 +759,73 @@ class DashboardAPIHandler(http.server.SimpleHTTPRequestHandler):
                 print(f"Parsing Yerin's MD ledger for month {month}")
                 yerin_tx = parse_markdown_ledger(yerin_md_path, month)
             
-            if not yerin_tx and os.path.exists(selected_yerin_path):
-                print(f"Parsing Yerin's Excel ledger: {os.path.basename(selected_yerin_path)} for month {month}")
-                yerin_tx = parse_excel_ledger(selected_yerin_path, month)
-                
-            if not yerin_tx and month <= 4 and yerin_xlsx_path and os.path.exists(yerin_xlsx_path):
-                print(f"Parsing Yerin's Legacy ledger: {os.path.basename(yerin_xlsx_path)} for month {month}")
-                yerin_tx = parse_excel_ledger(yerin_xlsx_path, month)
+            if not yerin_tx:
+                try:
+                    import urllib.request, io
+                    print(f"Fetching Yerin Google Sheet for month {month}...")
+                    url = "https://docs.google.com/spreadsheets/d/1Yfj22nvl0bfZhljjxl3YYbedkVW0Vi6OTli6xaSuaPo/export?format=xlsx"
+                    req = urllib.request.Request(url)
+                    sheet_data = urllib.request.urlopen(req, timeout=5).read()
+                    
+                    with zipfile.ZipFile(io.BytesIO(sheet_data), 'r') as zip_ref:
+                        wb_root = ET.fromstring(zip_ref.read('xl/workbook.xml'))
+                        ns = {'main': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+                        wb_rels = ET.fromstring(zip_ref.read('xl/_rels/workbook.xml.rels'))
+                        ns_rel = {'rel': 'http://schemas.openxmlformats.org/package/2006/relationships'}
+                        sheets_info = {r.get('Id'): r.get('Target') for r in wb_rels.findall('.//rel:Relationship', ns_rel)}
+                        
+                        ss_xml = zip_ref.read('xl/sharedStrings.xml')
+                        ss_root = ET.fromstring(ss_xml)
+                        shared_strings = [''.join([t.text or '' for t in si.findall('.//main:t', ns)]) for si in ss_root.findall('.//main:si', ns)]
+                        
+                        for s in wb_root.findall('.//main:sheet', ns):
+                            if s.get('name') == f"{month}월":
+                                r_id = s.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                                sheet_file = 'xl/' + sheets_info[r_id] if not sheets_info[r_id].startswith('xl/') else sheets_info[r_id]
+                                cells = get_sheet_cells_dict(zip_ref, sheet_file, shared_strings)
+                                
+                                rows = {}
+                                for ref, val in cells.items():
+                                    r_idx = int(''.join(filter(str.isdigit, ref)) or 0)
+                                    c_idx = ''.join(filter(str.isalpha, ref))
+                                    if r_idx not in rows: rows[r_idx] = {}
+                                    rows[r_idx][c_idx] = val
+                                
+                                for r in sorted(rows.keys()):
+                                    if r <= 30: continue
+                                    r_data = rows[r]
+                                    
+                                    # Income
+                                    inc_date = excel_date_to_str(r_data.get('B', ''))
+                                    if inc_date and '-' in inc_date and r_data.get('C') == '수입':
+                                        val_i = str(r_data.get('I', '')).strip()
+                                        val_h = str(r_data.get('H', '')).strip()
+                                        amt_str = val_i if val_i else val_h
+                                        amt = float(amt_str.replace(',', '') or 0)
+                                        if amt > 0:
+                                            yerin_tx.append({
+                                                'date': inc_date, 'type': '수입',
+                                                'category': r_data.get('D', '').strip() or '급여',
+                                                'subcategory': '', 'desc': r_data.get('E', '').strip(),
+                                                'account': '계좌이체', 'amount': amt, 'detail': ''
+                                            })
+                                    
+                                    # Expense
+                                    exp_date = excel_date_to_str(r_data.get('J', ''))
+                                    if exp_date and '-' in exp_date and r_data.get('L'):
+                                        amt_str = str(r_data.get('R', r_data.get('P', '0'))).strip()
+                                        amt = float(amt_str.replace(',', '') or 0)
+                                        if amt > 0:
+                                            yerin_tx.append({
+                                                'date': exp_date, 'type': '지출',
+                                                'category': r_data.get('L', '').strip() or '기타',
+                                                'subcategory': r_data.get('M', '').strip(),
+                                                'desc': r_data.get('N', '').strip(),
+                                                'account': r_data.get('K', '').strip() or '계좌이체',
+                                                'amount': amt, 'detail': r_data.get('S', '').strip()
+                                            })
+                except Exception as ex:
+                    print(f"Error fetching Yerin Google Sheet in server: {ex}")
 
             # 2. Load Parents' data
             parents_xlsx_path = os.path.join(ACCOUNT_BOOK_DIR, "2026년 우민 가계부_삼성.xlsx")
