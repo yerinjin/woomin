@@ -3,186 +3,547 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예린 & 부모님 통합 가계부 대시보드</title>
+    <title>진예린 자산 마스터 & 2033 로드맵 대시보드</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
+        <!-- Top App Header -->
         <header class="app-header">
             <div class="header-logo-section">
                 <div class="header-logo">
-                    <span class="logo-icon">🔮</span>
-                    <h1>예린 & 부모님 통합 가계부</h1>
-                </div>
-                
-                <!-- View Mode Toggle -->
-                <div class="view-mode-toggle">
-                    <button class="toggle-btn active" id="viewModeUnified">🔮 통합 뷰</button>
-                    <button class="toggle-btn" id="viewModeParents">👴👵 부모님 전용 뷰</button>
+                    <span class="logo-icon">👑</span>
+                    <div>
+                        <h1>진예린 자산 마스터 & 2033 로드맵</h1>
+                        <p class="header-subtitle">2030년 1억 조기 돌파 ➔ 2033년 1.5억~1.6억 완벽 정복</p>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Month Selector -->
-            <div class="month-selector-container">
-                <span class="selector-label">조회 월 선택</span>
-                <div class="month-buttons" id="monthButtons">
-                    <!-- Javascript will generate 1~12 buttons -->
+
+            <div class="header-actions">
+                <!-- Navigation to Parents Dashboard -->
+                <a href="parents.html" class="nav-parents-btn">
+                    <span>👴👵</span> 부모님 가계부 뷰 ↗
+                </a>
+
+                <!-- Month Selector -->
+                <div class="month-selector-container">
+                    <span class="selector-label">가계부 조회 월</span>
+                    <div class="month-buttons" id="monthButtons">
+                        <!-- JS generated buttons 1~12 -->
+                    </div>
                 </div>
             </div>
         </header>
 
-        <!-- Cross-Check Status Alert Banner -->
-        <section class="cross-check-panel card" id="crossCheckPanel">
-            <div class="panel-header">
-                <h2>🔗 가계부 간 거래 교차 검증 (송금 / 대신결제 정산)</h2>
-                <span class="badge" id="crossCheckSummary">검색 중...</span>
-            </div>
-            <div class="cross-check-lists">
-                <div class="check-col">
-                    <h3>✅ 일치하는 정산 내역</h3>
-                    <ul class="check-list" id="matchedList">
-                        <!-- Matched transactions go here -->
-                    </ul>
+        <!-- Hero Asset Summary Banner -->
+        <section class="hero-summary-card card">
+            <div class="hero-top">
+                <div class="hero-stat-main">
+                    <span class="hero-badge">부채 0원 • 100% 클린 순자산</span>
+                    <div class="hero-amount-group">
+                        <span class="hero-label">2026년 현재 순자산</span>
+                        <h2 class="hero-amount">4,300<span class="unit">만 원</span></h2>
+                    </div>
                 </div>
-                <div class="check-col">
-                    <h3>⚠️ 확인이 필요한 내역</h3>
-                    <ul class="check-list warn" id="unmatchedList">
-                        <!-- Unmatched transactions go here -->
-                    </ul>
+                
+                <div class="hero-target-cards">
+                    <div class="target-mini-card">
+                        <div class="target-title">
+                            <span>🏆 1차 골든 목표 (2030년)</span>
+                            <span class="badge gold">1억 원 클럽</span>
+                        </div>
+                        <div class="target-progress-wrap">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill gold-gradient" style="width: 43%;"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>현재 4,300만</span>
+                                <strong>43% 달성</strong>
+                                <span>목표 1억</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="target-mini-card">
+                        <div class="target-title">
+                            <span>🎯 찐최종 마스터 (2033년)</span>
+                            <span class="badge blue">1.5억~1.6억</span>
+                        </div>
+                        <div class="target-progress-wrap">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill blue-gradient" style="width: 27.5%;"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>동양 130% 환급 만기</span>
+                                <strong>27.5% 달성</strong>
+                                <span>확정 1억 5,500만</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 Big Pillars Snapshot -->
+            <div class="pillars-row">
+                <div class="pillar-chip">
+                    <span class="chip-icon">🏦</span>
+                    <div class="chip-content">
+                        <span class="chip-title">청년도약 + 예적금</span>
+                        <span class="chip-value">2,650만 ➔ <b>5,000만</b>(29년)</span>
+                    </div>
+                </div>
+                <div class="pillar-chip">
+                    <span class="chip-icon">💼</span>
+                    <div class="chip-content">
+                        <span class="chip-title">IBK 퇴직연금 (DC)</span>
+                        <span class="chip-value">958만 ➔ <b>3,240만</b>(33년)</span>
+                    </div>
+                </div>
+                <div class="pillar-chip">
+                    <span class="chip-icon">🛡️</span>
+                    <div class="chip-content">
+                        <span class="chip-title">확정 종신보험 (2건)</span>
+                        <span class="chip-value">기납 450만 ➔ <b>1,320만</b>(33년)</span>
+                    </div>
+                </div>
+                <div class="pillar-chip">
+                    <span class="chip-icon">📈</span>
+                    <div class="chip-content">
+                        <span class="chip-title">토스·ISA 미국투자</span>
+                        <span class="chip-value">247만 (월 4.4만 모으기)</span>
+                    </div>
+                </div>
+                <div class="pillar-chip">
+                    <span class="chip-icon">🏠</span>
+                    <div class="chip-content">
+                        <span class="chip-title">주택청약종합저축</span>
+                        <span class="chip-value">410만 (월 2만 적립)</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Main Dashboard Grid (Side by Side) -->
-        <main class="dashboard-grid" id="mainDashboardGrid">
-            <!-- Yerin's Card -->
-            <section class="user-dashboard card" id="yerinDashboard">
-                <div class="user-profile">
-                    <span class="user-avatar">👩🏻‍💻</span>
-                    <div class="user-info">
-                        <h2>진예린 가계부</h2>
-                        <span class="data-source-badge">실시간 연동 (Obsidian MD)</span>
-                    </div>
-                </div>
+        <!-- Main Dashboard 2-Column Grid -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Column: Growth Roadmap & Financial Core Sections -->
+            <div class="col-main">
 
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <h3>총 수입</h3>
-                        <p class="value income-color" id="yerinIncome">0원</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>소비성 지출</h3>
-                        <p class="value expense-color" id="yerinConsumption">0원</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>저축성 지출</h3>
-                        <p class="value savings-color" id="yerinSavings">0원</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>당월 잔액 / 저축률</h3>
-                        <p class="value balance-color" id="yerinBalance">0원</p>
-                        <span class="sub-label" id="yerinSavingsRate">저축률: 0%</span>
-                    </div>
-                </div>
-
-                <div class="visuals-section">
-                    <div class="chart-container">
-                        <h3>📊 카테고리별 소비 분석</h3>
-                        <canvas id="yerinChart"></canvas>
-                    </div>
-                    <div class="calendar-container">
-                        <h3>⭐ 무지출 성공 달력</h3>
-                        <div class="calendar-header" id="yerinCalMonth">2026년 8월</div>
-                        <div class="calendar-grid-header">
-                            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                <!-- Section 1: 2026~2033 Asset Growth Projection Chart -->
+                <section class="card section-card">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="icon">📈</span>
+                            <div>
+                                <h2>2026~2033년 연도별 자산 성장 시뮬레이션</h2>
+                                <span class="subtitle">주가 상승 0% 가정 시에도 100% 확정 달성되는 마스터 로드맵</span>
+                            </div>
                         </div>
-                        <div class="calendar-grid" id="yerinCalendar"></div>
+                        <span class="badge purple">8개년 확정 플랜</span>
                     </div>
-                </div>
-            </section>
 
-            <!-- Parents' Card -->
-            <section class="user-dashboard card" id="parentsDashboard">
-                <div class="user-profile">
-                    <span class="user-avatar">👴👵</span>
-                    <div class="user-info">
-                        <h2>부모님(우민/종란) 가계부</h2>
-                        <span class="data-source-badge warning-badge" id="parentsSourceBadge">연동 중 (Excel)</span>
+                    <div class="chart-box">
+                        <canvas id="growthChart" height="260"></canvas>
                     </div>
-                </div>
 
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <h3>총 수입</h3>
-                        <p class="value income-color" id="parentsIncome">0원</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>소비성 지출</h3>
-                        <p class="value expense-color" id="parentsConsumption">0원</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>저축성 지출</h3>
-                        <p class="value savings-color" id="parentsSavings">0원</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>당월 잔액 / 저축률</h3>
-                        <p class="value balance-color" id="parentsBalance">0원</p>
-                        <span class="sub-label" id="parentsSavingsRate">저축률: 0%</span>
-                    </div>
-                </div>
-
-                <!-- Mortgage Loan Card -->
-                <div class="loan-card" id="parentsLoanCard" style="display: none;">
-                    <div class="loan-header">
-                        <h3>🏠 주택담보대출 상환 현황 (엄마국민 담보대출)</h3>
-                        <span class="loan-progress-badge" id="loanProgressPct">0% 상환 완료</span>
-                    </div>
-                    <div class="loan-progress-bar-container">
-                        <div class="loan-progress-bar" id="loanProgressBar" style="width: 0%;"></div>
-                    </div>
-                    <div class="loan-details">
-                        <div class="loan-detail-item">
-                            <span class="label">총 대출액</span>
-                            <span class="value" id="loanTotal">0원</span>
+                    <!-- Milestone Accordion/Grid -->
+                    <div class="milestones-grid">
+                        <div class="milestone-item active">
+                            <div class="ms-year">2026년 (31세)</div>
+                            <div class="ms-target">4,300만 원</div>
+                            <div class="ms-desc">도약적금 30회 완료, ISA 모으기 시작, 카드 다이어트</div>
                         </div>
-                        <div class="loan-detail-item">
-                            <span class="label">대출 잔액</span>
-                            <span class="value" id="loanBalance">0원</span>
+                        <div class="milestone-item">
+                            <div class="ms-year">2027년 (32세)</div>
+                            <div class="ms-target">5,800만 원</div>
+                            <div class="ms-desc">도약적금 42회 순항, 퇴직연금 1,220만 원 돌파</div>
                         </div>
-                        <div class="loan-detail-item">
-                            <span class="label">당월 상환액</span>
-                            <span class="value" id="loanMonthlyPayment">0원</span>
+                        <div class="milestone-item">
+                            <div class="ms-year">2028년 (33세)</div>
+                            <div class="ms-target">7,400만 원</div>
+                            <div class="ms-desc">라이나 종신 10년 완납 1년 전 임박, 비상금 안정</div>
                         </div>
-                        <div class="loan-detail-sub">
-                            <div>원금 상환: <strong id="loanPrincipal">0원</strong></div>
-                            <div>이자 납부: <strong id="loanInterest">0원</strong></div>
+                        <div class="milestone-item highlight-star">
+                            <div class="ms-year">2029년 (34세) ⭐</div>
+                            <div class="ms-target">8,500만 원</div>
+                            <div class="ms-desc">⭐ 3월 청년도약 5,000만 수령! 6월 라이나 10년 완납(502만)</div>
+                        </div>
+                        <div class="milestone-item highlight-gold">
+                            <div class="ms-year">2030년 (35세) 🏆</div>
+                            <div class="ms-target">1억 1,000만 원</div>
+                            <div class="ms-desc">🏆 순자산 1억 공식 돌파! 12월 동양 종신 7년 완납(보험료 해방)</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="ms-year">2031년 (36세)</div>
+                            <div class="ms-target">1억 2,500만 원</div>
+                            <div class="ms-desc">동양 종신 원금 돌파(102%), 퇴직연금 2,300만 돌파</div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="ms-year">2032년 (37세)</div>
+                            <div class="ms-target">1억 4,000만 원</div>
+                            <div class="ms-desc">동양 종신 9년 차(620만), 퇴직연금 2,600만 돌파</div>
+                        </div>
+                        <div class="milestone-item highlight-master">
+                            <div class="ms-year">2033년 (38세) 🎯</div>
+                            <div class="ms-target">1.5억 ~ 1.6억</div>
+                            <div class="ms-desc">🎯 동양 10년 차(767만 / 130%) 도달! 찐 1.5억 완벽 달성!</div>
                         </div>
                     </div>
+                </section>
+
+                <!-- Section 2: 확정형 종신보험 정밀 분석 & 해약환급금 점프 시뮬레이션 -->
+                <section class="card section-card" id="insuranceSection">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="icon">🛡️</span>
+                            <div>
+                                <h2>확정형 종신보험 해약환급금 정밀 분석</h2>
+                                <span class="subtitle">완납 후 시간이 지날수록 확정 고금리로 점프하는 1,320만 원의 숨은 자산</span>
+                            </div>
+                        </div>
+                        <div class="tag-group">
+                            <span class="badge cyan">라이나 2029년 완납</span>
+                            <span class="badge gold">동양 2030년 완납 & 2033년 130%</span>
+                        </div>
+                    </div>
+
+                    <!-- Insurance Cards Grid -->
+                    <div class="insurance-cards-grid">
+                        
+                        <!-- LINA Card -->
+                        <div class="insurance-detail-card">
+                            <div class="ins-card-header">
+                                <div class="ins-name">
+                                    <span class="badge-ins-type">10년 완납형</span>
+                                    <h3>라이나 무배당THE건강해지는종신보험</h3>
+                                </div>
+                                <div class="ins-premium">월 35,550원</div>
+                            </div>
+                            <div class="ins-meta-row">
+                                <div>가입일: <strong>2019년 6월 (여자 24세)</strong></div>
+                                <div>⭐ <strong>정확한 완납: 2029년 6월 (10년)</strong></div>
+                            </div>
+
+                            <div class="refund-highlight-box">
+                                <div class="hl-item">
+                                    <span class="hl-label">2029.06 (10년 완납 시점)</span>
+                                    <span class="hl-val income-color">5,019,300원 (117.6%)</span>
+                                </div>
+                                <div class="hl-item">
+                                    <span class="hl-label">2033.06 (14년 차 시점)</span>
+                                    <span class="hl-val balance-color">약 5,530,000원 (128.9%)</span>
+                                </div>
+                                <div class="hl-item">
+                                    <span class="hl-label">2034.06 (15년 차 시점)</span>
+                                    <span class="hl-val">5,638,500원 (132.1%)</span>
+                                </div>
+                            </div>
+
+                            <details class="refund-table-details">
+                                <summary>📋 라이나 연도별 해지환급금 전체 표 보기</summary>
+                                <table class="mini-table">
+                                    <thead>
+                                        <tr>
+                                            <th>경과기간 (연도)</th>
+                                            <th>해지환급금</th>
+                                            <th>환급률</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>5년차 (2024년)</td><td>0원 (무해지)</td><td>0.0%</td></tr>
+                                        <tr class="highlight-row"><td><strong>10년 완납 (2029.06)</strong></td><td><strong>5,019,300원</strong></td><td><strong>117.6%</strong></td></tr>
+                                        <tr><td>14년차 (2033.06)</td><td>약 5,530,000원</td><td>128.9%</td></tr>
+                                        <tr><td>15년차 (2034.06)</td><td>5,638,500원</td><td>132.1%</td></tr>
+                                        <tr><td>20년차 (2039.06)</td><td>6,329,400원</td><td>148.3%</td></tr>
+                                        <tr><td>30년차 (2049.06)</td><td>7,953,150원</td><td>186.4%</td></tr>
+                                    </tbody>
+                                </table>
+                            </details>
+                        </div>
+
+                        <!-- DONGYANG Card -->
+                        <div class="insurance-detail-card highlight-border">
+                            <div class="ins-card-header">
+                                <div class="ins-name">
+                                    <span class="badge-ins-type gold">7년 완납 + 10년 130%형</span>
+                                    <h3>동양 (무)수호천사NEW알뜰플러스종신</h3>
+                                </div>
+                                <div class="ins-premium">월 70,200원 (총 589만 원)</div>
+                            </div>
+                            <div class="ins-meta-row">
+                                <div>가입일: <strong>2023년 12월 (여자 28세)</strong></div>
+                                <div>⭐ <strong>정확한 완납: 2030년 12월 (7년)</strong></div>
+                            </div>
+
+                            <div class="refund-highlight-box gold-tint">
+                                <div class="hl-item">
+                                    <span class="hl-label">2030.12 (7년 완납 시점)</span>
+                                    <span class="hl-val">5,860,000원 (99.44%)</span>
+                                </div>
+                                <div class="hl-item">
+                                    <span class="hl-label">2031.03 (7년 3개월)</span>
+                                    <span class="hl-val income-color">5,900,000원 (100.16% 원금 돌파)</span>
+                                </div>
+                                <div class="hl-item star-hl">
+                                    <span class="hl-label">⭐ 2033.12 (10년 차 골든타임)</span>
+                                    <span class="hl-val gold-color">7,670,000원 (130.11% 점프!)</span>
+                                </div>
+                            </div>
+
+                            <details class="refund-table-details">
+                                <summary>📋 동양 연도별 해지환급금 전체 표 보기</summary>
+                                <table class="mini-table">
+                                    <thead>
+                                        <tr>
+                                            <th>경과기간 (나이/연도)</th>
+                                            <th>납입누계</th>
+                                            <th>해약환급금</th>
+                                            <th>환급률</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>3년차 (2026말/30세)</td><td>252만</td><td>96만 원</td><td>38.28%</td></tr>
+                                        <tr><td>5년차 (2028말/32세)</td><td>421만</td><td>178만 원</td><td>42.36%</td></tr>
+                                        <tr class="highlight-row"><td><strong>7년 완납 (2030.12/34세)</strong></td><td>589만</td><td><strong>586만 원</strong></td><td><strong>99.44%</strong></td></tr>
+                                        <tr><td>7년 3개월 (2031.03)</td><td>589만</td><td>590만 원</td><td>100.16%</td></tr>
+                                        <tr><td>8년차 (2031.12/35세)</td><td>589만</td><td>603만 원</td><td>102.31%</td></tr>
+                                        <tr><td>9년차 (2032.12/36세)</td><td>589만</td><td>620만 원</td><td>105.27%</td></tr>
+                                        <tr class="highlight-row gold-row"><td><strong>⭐ 10년차 (2033.12/37세)</strong></td><td>589만</td><td><strong>767만 원</strong></td><td><strong>130.11% 점프</strong></td></tr>
+                                        <tr><td>15년차 (2038.12/42세)</td><td>589만</td><td>835만 원</td><td>141.64%</td></tr>
+                                        <tr><td>20년차 (2043.12/47세)</td><td>589만</td><td>909만 원</td><td>154.23%</td></tr>
+                                    </tbody>
+                                </table>
+                            </details>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Section 3 & 4: Retirement Pension (IBK DC) & Stocks/Toss -->
+                <div class="dual-section-row">
+                    
+                    <!-- IBK DC Pension -->
+                    <section class="card section-card sub-card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="icon">💼</span>
+                                <div>
+                                    <h2>IBK 퇴직연금 (DC형)</h2>
+                                    <span class="subtitle">현재 잔고 958만 원 ➔ 2033년 3,240만 원</span>
+                                </div>
+                            </div>
+                            <span class="badge blue">회사 의무 적립 중</span>
+                        </div>
+
+                        <div class="pension-breakdown-list">
+                            <div class="breakdown-item">
+                                <div class="bd-left">
+                                    <span class="bd-tag safe">안전 자산 (원리금 보장)</span>
+                                    <h4>부산은행 정기예금 (3.04%)</h4>
+                                    <p class="bd-desc">원금 보장형 안전 확정 금리 운용</p>
+                                </div>
+                                <div class="bd-val">안전 수익형</div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="bd-left">
+                                    <span class="bd-tag grow">성장 자산 (실적 배당형)</span>
+                                    <h4>미국 S&P500 / 나스닥100 채권혼합 ETF</h4>
+                                    <p class="bd-desc">미국 대표 지수 + 채권 혼합 분산 투자</p>
+                                </div>
+                                <div class="bd-val">지수 추종형</div>
+                            </div>
+                        </div>
+
+                        <div class="pension-simulation-box">
+                            <div class="sim-row">
+                                <span>현재 적립 잔고 (2026년)</span>
+                                <strong>958만 원</strong>
+                            </div>
+                            <div class="sim-row">
+                                <span>회사 법정 추가 적립 (연 ~260만 원 × 7년)</span>
+                                <strong>+ 약 1,900만 원</strong>
+                            </div>
+                            <div class="sim-row total-sim">
+                                <span>2033년 예상 총 적립액 (2% 예금 보수적 기준)</span>
+                                <strong class="balance-color">약 3,240만 원</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Toss & Stock Investments -->
+                    <section class="card section-card sub-card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="icon">📱</span>
+                                <div>
+                                    <h2>토스증권 & 주식 투자 포트폴리오</h2>
+                                    <span class="subtitle">총 247만 원 + 매월 8일 월 4.4만 모으기</span>
+                                </div>
+                            </div>
+                            <span class="badge green">실시간/모으기 가동</span>
+                        </div>
+
+                        <div class="stock-holdings-list">
+                            <div class="stock-item">
+                                <div class="stk-icon">🇺🇸</div>
+                                <div class="stk-info">
+                                    <h4>미래에셋 ISA [중개형] — 적립식 모으기</h4>
+                                    <p>TIGER 미국S&P500 + TIGER 미국배당다우존스</p>
+                                </div>
+                                <div class="stk-stat">
+                                    <span class="stk-badge">매월 8일 자동</span>
+                                    <strong>월 44,374원</strong>
+                                </div>
+                            </div>
+
+                            <div class="stock-item">
+                                <div class="stk-icon">⚡</div>
+                                <div class="stk-info">
+                                    <h4>토스증권 & 카카오페이 보유 종목</h4>
+                                    <p>KODEX 미국나스닥100, 엔비디아(NVDA), 인텔(INTC) 등</p>
+                                </div>
+                                <div class="stk-stat">
+                                    <span class="stk-badge neutral">보유 잔고</span>
+                                    <strong>~247만 원</strong>
+                                </div>
+                            </div>
+
+                            <div class="stock-item">
+                                <div class="stk-icon">🔄</div>
+                                <div class="stk-info">
+                                    <h4>토스 앱 현금흐름 연동 상태</h4>
+                                    <p>증권 출금 및 수입 배당/이자 미실시간 반영</p>
+                                </div>
+                                <div class="stk-stat">
+                                    <span class="badge-mini-live">가계부 동기화 완료</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
-                <div class="visuals-section">
-                    <div class="chart-container">
-                        <h3>📊 카테고리별 소비 분석</h3>
-                        <canvas id="parentsChart"></canvas>
-                    </div>
-                    <div class="calendar-container">
-                        <h3>⭐ 무지출 성공 달력</h3>
-                        <div class="calendar-header" id="parentsCalMonth">2026년 8월</div>
-                        <div class="calendar-grid-header">
-                            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+            </div>
+
+            <!-- Right Column: Realtime Monthly Ledger & Diet Card Tracker -->
+            <div class="col-side">
+
+                <!-- Realtime Monthly Cashflow Card -->
+                <section class="card side-card" id="monthlyLedgerSection">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="icon">💵</span>
+                            <div>
+                                <h2 id="ledgerMonthTitle">2026년 9월 가계부 실시간 현황</h2>
+                                <span class="subtitle">실제 수입 / 지출 / 자동 저축 내역</span>
+                            </div>
                         </div>
-                        <div class="calendar-grid" id="parentsCalendar"></div>
                     </div>
-                </div>
-            </section>
+
+                    <!-- Metrics Grid -->
+                    <div class="side-metrics-grid">
+                        <div class="metric-tile">
+                            <span class="lbl">총 수입</span>
+                            <span class="val income-color" id="liveIncome">0원</span>
+                        </div>
+                        <div class="metric-tile">
+                            <span class="lbl">소비성 지출</span>
+                            <span class="val expense-color" id="liveExpense">0원</span>
+                        </div>
+                        <div class="metric-tile">
+                            <span class="lbl">강제 저축성 지출</span>
+                            <span class="val savings-color" id="liveSavings">0원</span>
+                        </div>
+                        <div class="metric-tile">
+                            <span class="lbl">당월 잔액 / 저축률</span>
+                            <span class="val balance-color" id="liveBalance">0원</span>
+                            <span class="sub-rate" id="liveSavingsRate">저축률: 0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Golden Allocation Checklist -->
+                    <div class="allocation-checklist">
+                        <h3>📋 월급(250만 원) 황금 분배 현황</h3>
+                        <ul class="alloc-list">
+                            <li>
+                                <div class="alloc-name">
+                                    <span class="bullet blue">●</span> 강제 적금/저축 (청년도약 70+종신 10.5+청약 2+ISA 4.4)
+                                </div>
+                                <strong>87만 원 (35%)</strong>
+                            </li>
+                            <li>
+                                <div class="alloc-name">
+                                    <span class="bullet purple">●</span> 부모님 지원 (주거 대체/효도 지원금)
+                                </div>
+                                <strong>50만 원 (20%)</strong>
+                            </li>
+                            <li>
+                                <div class="alloc-name">
+                                    <span class="bullet cyan">●</span> 순수 보장성 보험 (실비/종합/치아/운전자)
+                                </div>
+                                <strong>14.5만 원 (6%)</strong>
+                            </li>
+                            <li>
+                                <div class="alloc-name">
+                                    <span class="bullet orange">●</span> 고정 생활비 & 회비 (통신/모임)
+                                </div>
+                                <strong>30만 원 (12%)</strong>
+                            </li>
+                            <li class="diet-target-item">
+                                <div class="alloc-name">
+                                    <span class="bullet red">●</span> 변동 생활비 (현대카드 예산 목표)
+                                </div>
+                                <strong class="gold-color">45만~50만 원 (20%)</strong>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Hyundai Card Diet Tracker -->
+                    <div class="card-diet-box">
+                        <div class="diet-header">
+                            <div class="diet-title">
+                                <span>💳 현대카드 소비 다이어트</span>
+                                <span class="badge red">월 목표: 50만 원 이하</span>
+                            </div>
+                            <span class="diet-rate" id="dietStatusText">주 11~12만 원 선 유지</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill diet-gradient" id="dietProgressBar" style="width: 0%;"></div>
+                        </div>
+                        <div class="diet-details">
+                            <div>당월 누적 카드 소비: <strong id="dietSpentAmount">0원</strong></div>
+                            <div>남은 예산: <strong id="dietRemainingAmount">500,000원</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Category Spending Chart & No-Spend Calendar -->
+                    <div class="side-visuals">
+                        <div class="chart-container">
+                            <h3>📊 카테고리별 소비 분석</h3>
+                            <canvas id="categoryChart" height="180"></canvas>
+                        </div>
+                        
+                        <div class="calendar-container">
+                            <h3>⭐ 무지출 성공 달력</h3>
+                            <div class="calendar-header" id="calMonthHeader">2026년 9월</div>
+                            <div class="calendar-grid-header">
+                                <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                            </div>
+                            <div class="calendar-grid" id="calendarGrid"></div>
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+
         </main>
     </div>
-    
+
     <script src="app.js"></script>
 </body>
 </html>

@@ -1,33 +1,22 @@
 // Global Chart Instances
-let yerinChartInstance = null;
-let parentsChartInstance = null;
+let growthChartInstance = null;
+let categoryChartInstance = null;
 
 // App State
-let currentMonth = 8; // Default to August
-let currentViewMode = 'unified'; // 'unified' or 'parents'
-
-// DOM Elements
-const monthButtonsContainer = document.getElementById('monthButtons');
-const matchedList = document.getElementById('matchedList');
-const unmatchedList = document.getElementById('unmatchedList');
-const crossCheckSummary = document.getElementById('crossCheckSummary');
-const mainDashboardGrid = document.getElementById('mainDashboardGrid');
-const yerinDashboard = document.getElementById('yerinDashboard');
-const crossCheckPanel = document.getElementById('crossCheckPanel');
-const parentsLoanCard = document.getElementById('parentsLoanCard');
-
-// View Mode Buttons
-const btnUnified = document.getElementById('viewModeUnified');
-const btnParents = document.getElementById('viewModeParents');
+let currentMonth = new Date().getMonth() + 1; // Default to current month (9)
 
 // Helper to format currency
 function formatKRW(val) {
+    if (val === undefined || val === null || isNaN(val)) return '0원';
     return Math.round(val).toLocaleString('ko-KR') + '원';
 }
 
-// Generate Month Buttons
+// 1. Initialize Month Selector
 function initMonthSelector() {
-    monthButtonsContainer.innerHTML = '';
+    const container = document.getElementById('monthButtons');
+    if (!container) return;
+    container.innerHTML = '';
+    
     for (let m = 1; m <= 12; m++) {
         const btn = document.createElement('button');
         btn.className = `month-btn ${m === currentMonth ? 'active' : ''}`;
@@ -38,101 +27,142 @@ function initMonthSelector() {
             currentMonth = m;
             loadDashboardData(m);
         });
-        monthButtonsContainer.appendChild(btn);
+        container.appendChild(btn);
     }
 }
 
-// Initialize View Mode Toggles
-function initViewModeSelector() {
-    btnUnified.addEventListener('click', () => {
-        btnUnified.classList.add('active');
-        btnParents.classList.remove('active');
-        currentViewMode = 'unified';
-        
-        // Show Yerin & Cross checks
-        yerinDashboard.style.display = '';
-        crossCheckPanel.style.display = '';
-        mainDashboardGrid.classList.remove('parents-only-view');
-    });
-    
-    btnParents.addEventListener('click', () => {
-        btnParents.classList.add('active');
-        btnUnified.classList.remove('active');
-        currentViewMode = 'parents';
-        
-        // Hide Yerin & Cross checks
-        yerinDashboard.style.display = 'none';
-        crossCheckPanel.style.display = 'none';
-        mainDashboardGrid.classList.add('parents-only-view');
-    });
-}
+// 2. Render 2026~2033 Asset Growth Projection Chart
+function renderGrowthChart() {
+    const canvas = document.getElementById('growthChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-// Render Calendar Grid
-function renderCalendar(containerId, headerId, year, month, noSpendDays) {
-    const container = document.getElementById(containerId);
-    const header = document.getElementById(headerId);
-    
-    container.innerHTML = '';
-    header.innerText = `${year}년 ${month}월`;
-    
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const firstDayIndex = new Date(year, month - 1, 1).getDay(); // 0 is Sun, 6 is Sat
-    
-    // Render Empty Cells for Offset
-    for (let i = 0; i < firstDayIndex; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'cal-day empty';
-        container.appendChild(cell);
+    const years = ['2026년\n(31세)', '2027년\n(32세)', '2028년\n(33세)', '2029년⭐\n(34세)', '2030년🏆\n(35세)', '2031년\n(36세)', '2032년\n(37세)', '2033년🎯\n(38세)'];
+    const netWorthData = [4300, 5800, 7400, 8500, 11000, 12500, 14000, 15500]; // in 10,000 KRW (만 원)
+
+    // Gradient Background
+    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
+    gradient.addColorStop(0.5, 'rgba(14, 165, 233, 0.15)');
+    gradient.addColorStop(1, 'rgba(11, 13, 20, 0)');
+
+    if (growthChartInstance) {
+        growthChartInstance.destroy();
     }
-    
-    // Render Month Days
-    for (let d = 1; d <= daysInMonth; d++) {
-        const cell = document.createElement('div');
-        cell.className = 'cal-day';
-        cell.innerText = d;
-        
-        if (year === 2026 && month === 8 && d === 26) {
-            cell.classList.add('today');
+
+    growthChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: '확정 순자산 목표 (만 원)',
+                data: netWorthData,
+                borderColor: '#fbbf24',
+                borderWidth: 3,
+                pointBackgroundColor: ['#38bdf8', '#38bdf8', '#38bdf8', '#22d3ee', '#fbbf24', '#a78bfa', '#a78bfa', '#ec4899'],
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                fill: true,
+                backgroundColor: gradient,
+                tension: 0.35
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#fbbf24',
+                    bodyColor: '#f8fafc',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            const val = context.raw;
+                            if (val >= 10000) {
+                                const eok = (val / 10000).toFixed(2);
+                                return ` 목표 순자산: ${val.toLocaleString()}만 원 (${eok}억 원)`;
+                            }
+                            return ` 목표 순자산: ${val.toLocaleString()}만 원`;
+                        },
+                        afterLabel: function(context) {
+                            const index = context.dataIndex;
+                            const notes = [
+                                '📌 청년도약 30회 완료, ISA 모으기 가동',
+                                '📌 도약적금 42회 순항, 퇴직연금 1,220만 돌파',
+                                '📌 라이나 종신 10년 완납 1년 전 임박',
+                                '⭐ 3월 도약적금 5천만 수령 & 6월 라이나 완납(502만)',
+                                '🏆 1억 클럽 공식 돌파! 동양 종신 7년 완납',
+                                '📌 동양 종신 원금 돌파(102%), 퇴직연금 2,300만',
+                                '📌 동양 종신 9년 차(620만), 퇴직연금 2,600만',
+                                '🎯 동양 10년 차(130.11%, 767만 원) 도달 ➔ 1.5억 완벽 정복!'
+                            ];
+                            return '\n' + notes[index];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                    ticks: {
+                        color: '#94a3b8',
+                        font: { family: 'Outfit', size: 11, weight: '600' }
+                    }
+                },
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: {
+                        color: '#64748b',
+                        font: { family: 'Outfit', size: 11 },
+                        callback: function(val) {
+                            if (val >= 10000) return (val / 10000) + '억';
+                            return val + '만';
+                        }
+                    },
+                    min: 3000,
+                    max: 17000
+                }
+            }
         }
-        
-        // Check if No-Spend Day
-        if (noSpendDays.includes(d)) {
-            cell.classList.add('no-spend');
-        } else {
-            cell.classList.add('spend');
-        }
-        
-        container.appendChild(cell);
-    }
+    });
 }
 
-// Create/Update Doughnut Chart
-function renderDoughnutChart(canvasId, chartInstanceRef, categories) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    
+// 3. Render Spending Category Doughnut Chart
+function renderCategoryChart(categories) {
+    const canvas = document.getElementById('categoryChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
     const labels = [];
     const data = [];
     const colors = [
-        '#ff5252', '#ff4081', '#e040fb', '#7c4dff', 
-        '#536dfe', '#448aff', '#40c4ff', '#18ffff', 
-        '#64ffda', '#69f0ae', '#b2ff59', '#eeff41', '#ffd740'
+        '#f43f5e', '#fb7185', '#ec4899', '#d946ef', 
+        '#a855f7', '#8b5cf6', '#6366f1', '#3b82f6', 
+        '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#fbbf24'
     ];
-    
-    Object.entries(categories).forEach(([cat, val]) => {
-        if (val > 0) {
-            labels.push(cat);
-            data.push(val);
-        }
-    });
 
-    if (canvasId === 'yerinChart' && yerinChartInstance) {
-        yerinChartInstance.destroy();
-    } else if (canvasId === 'parentsChart' && parentsChartInstance) {
-        parentsChartInstance.destroy();
+    if (categories) {
+        Object.entries(categories).forEach(([cat, val]) => {
+            if (val > 0) {
+                labels.push(cat);
+                data.push(val);
+            }
+        });
+    }
+
+    if (categoryChartInstance) {
+        categoryChartInstance.destroy();
     }
 
     if (data.length === 0) {
-        const newInstance = new Chart(ctx, {
+        categoryChartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['지출 없음'],
@@ -144,41 +174,36 @@ function renderDoughnutChart(canvasId, chartInstanceRef, categories) {
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: false }
-                }
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
             }
         });
-        if (canvasId === 'yerinChart') yerinChartInstance = newInstance;
-        else parentsChartInstance = newInstance;
         return;
     }
 
-    const newInstance = new Chart(ctx, {
+    categoryChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: labels,
             datasets: [{
                 data: data,
                 backgroundColor: colors.slice(0, data.length),
-                borderColor: '#161a26',
+                borderColor: '#141826',
                 borderWidth: 2,
                 hoverOffset: 6
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'right',
                     labels: {
-                        color: '#8e95a7',
-                        font: {
-                            family: 'Outfit',
-                            size: 11
-                        },
-                        boxWidth: 10,
-                        padding: 8
+                        color: '#94a3b8',
+                        font: { family: 'Outfit', size: 11 },
+                        boxWidth: 8,
+                        padding: 6
                     }
                 },
                 tooltip: {
@@ -189,162 +214,157 @@ function renderDoughnutChart(canvasId, chartInstanceRef, categories) {
                     }
                 }
             },
-            cutout: '65%'
+            cutout: '68%'
+        }
+    });
+}
+
+// 4. Render Calendar Grid
+function renderCalendar(year, month, noSpendDays = []) {
+    const container = document.getElementById('calendarGrid');
+    const header = document.getElementById('calMonthHeader');
+    if (!container || !header) return;
+
+    container.innerHTML = '';
+    header.innerText = `${year}년 ${month}월`;
+
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const firstDayIndex = new Date(year, month - 1, 1).getDay(); // 0 is Sun
+
+    // Empty offset cells
+    for (let i = 0; i < firstDayIndex; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day empty';
+        container.appendChild(cell);
+    }
+
+    const today = new Date();
+    const isCurrentYearMonth = (year === today.getFullYear() && month === (today.getMonth() + 1));
+    const currentDayNum = today.getDate();
+
+    // Days cells
+    for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day';
+        cell.innerText = d;
+
+        if (isCurrentYearMonth && d === currentDayNum) {
+            cell.classList.add('today');
+        }
+
+        if (noSpendDays.includes(d)) {
+            cell.classList.add('no-spend');
+        } else {
+            cell.classList.add('spend');
+        }
+
+        container.appendChild(cell);
+    }
+}
+
+// 5. Update Hyundai Card Diet Tracker
+function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
+    const progressBar = document.getElementById('dietProgressBar');
+    const spentText = document.getElementById('dietSpentAmount');
+    const remainingText = document.getElementById('dietRemainingAmount');
+    const statusText = document.getElementById('dietStatusText');
+    if (!progressBar) return;
+
+    const MONTHLY_TARGET = 500000; // 50만 원
+
+    // Filter Hyundai Card transactions or use consumption total
+    let cardSpent = 0;
+    transactions.forEach(tx => {
+        const acc = (tx.account || '').toLowerCase();
+        const type = tx.type || '';
+        if (type === '지출' || type === '소비' || type === 'consumption') {
+            if (acc.includes('현대') || acc.includes('카드') || acc.includes('hyundai')) {
+                cardSpent += tx.amount || 0;
+            }
         }
     });
 
-    if (canvasId === 'yerinChart') yerinChartInstance = newInstance;
-    else parentsChartInstance = newInstance;
-}
+    // If specific card filter is empty, fallback to consumptionTotal
+    if (cardSpent === 0 && consumptionTotal > 0) {
+        cardSpent = consumptionTotal;
+    }
 
-// Bind Metrics
-function bindUserMetrics(prefix, stats) {
-    const summary = stats.summary;
-    document.getElementById(`${prefix}Income`).innerText = formatKRW(summary.income);
-    document.getElementById(`${prefix}Consumption`).innerText = formatKRW(summary.consumption);
-    document.getElementById(`${prefix}Savings`).innerText = formatKRW(summary.savings);
-    
-    const balanceElem = document.getElementById(`${prefix}Balance`);
-    balanceElem.innerText = formatKRW(summary.balance);
-    if (summary.balance < 0) {
-        balanceElem.className = 'value expense-color';
+    const remaining = Math.max(0, MONTHLY_TARGET - cardSpent);
+    const pct = Math.min(100, (cardSpent / MONTHLY_TARGET) * 100);
+
+    progressBar.style.width = `${pct}%`;
+    spentText.innerText = formatKRW(cardSpent);
+    remainingText.innerText = formatKRW(remaining);
+
+    if (cardSpent <= MONTHLY_TARGET) {
+        statusText.innerText = `목표 내 순항 중 (${pct.toFixed(0)}% 사용 / 잔여 ${formatKRW(remaining)})`;
+        statusText.style.color = '#34d399';
     } else {
-        balanceElem.className = 'value balance-color';
+        const over = cardSpent - MONTHLY_TARGET;
+        statusText.innerText = `⚠️ 예산 초과 (+${formatKRW(over)})`;
+        statusText.style.color = '#fb7185';
     }
-    
-    document.getElementById(`${prefix}SavingsRate`).innerText = `저축률: ${summary.savingsRate}%`;
 }
 
-// Bind Mortgage Loan Details
-function bindParentsLoan(loan) {
-    if (!loan) {
-        parentsLoanCard.style.display = 'none';
-        return;
-    }
-
-    parentsLoanCard.style.display = 'flex';
-    
-    const total = loan.totalLoan;
-    const balance = loan.balance;
-    const repaid = total - balance;
-    const pct = (repaid / total) * 100;
-    
-    document.getElementById('loanProgressPct').innerText = `${pct.toFixed(1)}% 상환 완료`;
-    document.getElementById('loanProgressBar').style.width = `${pct}%`;
-    
-    document.getElementById('loanTotal').innerText = formatKRW(total);
-    document.getElementById('loanBalance').innerText = formatKRW(balance);
-    document.getElementById('loanMonthlyPayment').innerText = formatKRW(loan.totalPayment);
-    document.getElementById('loanPrincipal').innerText = formatKRW(loan.principal);
-    document.getElementById('loanInterest').innerText = formatKRW(loan.interest);
-}
-
-// Load and render data
+// 6. Load and Render Dashboard Data
 async function loadDashboardData(month) {
     try {
+        const titleElem = document.getElementById('ledgerMonthTitle');
+        if (titleElem) titleElem.innerText = `2026년 ${month}월 가계부 실시간 현황`;
+
         const response = await fetch(`/api/data?month=${month}`);
         if (!response.ok) {
             throw new Error(`API error: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        console.log("Dashboard data received:", data);
+        console.log("Yerin Dashboard data:", data);
 
-        // 1. Bind Yerin Stats
-        bindUserMetrics('yerin', data.yerin);
-        renderDoughnutChart('yerinChart', yerinChartInstance, data.yerin.categories);
-        renderCalendar('yerinCalendar', 'yerinCalMonth', 2026, month, data.yerin.noSpendDays);
+        const yerinData = data.yerin || {
+            summary: { income: 0, consumption: 0, savings: 0, balance: 0 },
+            categories: {},
+            noSpendDays: [],
+            transactions: []
+        };
 
-        // 2. Bind Parents Stats & Loan
-        bindUserMetrics('parents', data.parents);
-        bindParentsLoan(data.parents.loan);
-        renderDoughnutChart('parentsChart', parentsChartInstance, data.parents.categories);
-        renderCalendar('parentsCalendar', 'parentsCalMonth', 2026, month, data.parents.noSpendDays);
+        const summary = yerinData.summary || {};
+        const income = summary.income || 0;
+        const consumption = summary.consumption || 0;
+        const savings = summary.savings || 0;
+        const balance = summary.balance || (income - consumption - savings);
 
-        // Update Parents source badge depending on fallback state
-        const badge = document.getElementById('parentsSourceBadge');
-        if (data.parents.isFallback) {
-            badge.innerText = `${data.parents.fallbackMonth}월 결산 내역 (최신)`;
-            badge.className = 'data-source-badge warning-badge';
+        // Bind Live Metrics
+        document.getElementById('liveIncome').innerText = formatKRW(income);
+        document.getElementById('liveExpense').innerText = formatKRW(consumption);
+        document.getElementById('liveSavings').innerText = formatKRW(savings);
+        
+        const balanceElem = document.getElementById('liveBalance');
+        balanceElem.innerText = formatKRW(balance);
+        if (balance < 0) {
+            balanceElem.className = 'val expense-color';
         } else {
-            badge.innerText = `${month}월 결산 내역 (Excel)`;
-            badge.className = 'data-source-badge';
+            balanceElem.className = 'val balance-color';
         }
 
-        // 3. Render Cross-Check list
-        matchedList.innerHTML = '';
-        unmatchedList.innerHTML = '';
-
-        const cc = data.crossCheck;
-
-        // Render matched items
-        if (cc.matched.length === 0) {
-            matchedList.innerHTML = '<li class="no-tx-msg">일치하는 거래 내역이 없습니다.</li>';
-        } else {
-            cc.matched.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'match-item';
-                li.innerHTML = `
-                    <div class="tx-detail">
-                        <span class="tx-title">${item.yerin.desc} ↔ ${item.parents.desc}</span>
-                        <span class="tx-meta">[${item.date}] 예린(${item.yerin.account}) | 부모님(${item.parents.account})</span>
-                    </div>
-                    <span class="tx-amount">${formatKRW(item.amount)}</span>
-                `;
-                matchedList.appendChild(li);
-            });
+        let savingsRate = 0;
+        if (income > 0) {
+            savingsRate = ((savings / income) * 100).toFixed(1);
         }
+        document.getElementById('liveSavingsRate').innerText = `저축률: ${savingsRate}%`;
 
-        // Render unmatched items
-        const unmatchedCount = cc.unmatched_yerin.length + cc.unmatched_parents.length;
-        if (unmatchedCount === 0) {
-            unmatchedList.innerHTML = '<li class="no-tx-msg" style="color: var(--accent-income);">양측 가계부에 불일치하는 연관 거래가 없습니다. 완벽합니다!</li>';
-        } else {
-            cc.unmatched_yerin.forEach(item => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div class="tx-detail">
-                        <span class="tx-title"><span style="color:#a5b4fc">[예린 가계부만 기록]</span> ${item.desc}</span>
-                        <span class="tx-meta">[${item.date}] 계정: ${item.category} | 결제: ${item.account}</span>
-                    </div>
-                    <span class="tx-amount">${formatKRW(item.amount)}</span>
-                `;
-                unmatchedList.appendChild(li);
-            });
-
-            cc.unmatched_parents.forEach(item => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div class="tx-detail">
-                        <span class="tx-title"><span style="color:#fb923c">[부모님 가계부만 기록]</span> ${item.desc}</span>
-                        <span class="tx-meta">[${item.date}] 계정: ${item.category} | 결제: ${item.account}</span>
-                    </div>
-                    <span class="tx-amount">${formatKRW(item.amount)}</span>
-                `;
-                unmatchedList.appendChild(li);
-            });
-        }
-
-        // Update Cross Check Badge Status
-        crossCheckSummary.innerText = `정산 ${cc.matched.length}건 확인됨 / 미매칭 ${unmatchedCount}건`;
-        if (unmatchedCount > 0) {
-            crossCheckSummary.style.background = 'rgba(255, 77, 77, 0.15)';
-            crossCheckSummary.style.color = '#ff8a80';
-            crossCheckSummary.style.border = '1px solid rgba(255, 77, 77, 0.3)';
-        } else {
-            crossCheckSummary.style.background = 'rgba(0, 230, 118, 0.15)';
-            crossCheckSummary.style.color = '#b9f6ca';
-            crossCheckSummary.style.border = '1px solid rgba(0, 230, 118, 0.3)';
-        }
+        // Update Charts & Visuals
+        renderCategoryChart(yerinData.categories);
+        renderCalendar(2026, month, yerinData.noSpendDays);
+        updateCardDietTracker(yerinData.transactions, consumption);
 
     } catch (err) {
-        console.error("Error loading dashboard metrics:", err);
+        console.error("Error loading Yerin dashboard:", err);
     }
 }
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', () => {
     initMonthSelector();
-    initViewModeSelector();
+    renderGrowthChart();
     loadDashboardData(currentMonth);
 });
