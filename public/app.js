@@ -48,6 +48,7 @@ function renderGrowthChart() {
 
     if (growthChartInstance) {
         growthChartInstance.destroy();
+        growthChartInstance = null;
     }
 
     growthChartInstance = new Chart(ctx, {
@@ -62,8 +63,8 @@ function renderGrowthChart() {
                 pointBackgroundColor: ['#38bdf8', '#38bdf8', '#38bdf8', '#22d3ee', '#fbbf24', '#a78bfa', '#a78bfa', '#ec4899'],
                 pointBorderColor: '#ffffff',
                 pointBorderWidth: 2,
-                pointRadius: 6,
-                pointHoverRadius: 9,
+                pointRadius: 5,
+                pointHoverRadius: 8,
                 fill: true,
                 backgroundColor: gradient,
                 tension: 0.35
@@ -75,10 +76,10 @@ function renderGrowthChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
                     titleColor: '#fbbf24',
                     bodyColor: '#f8fafc',
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
                     borderWidth: 1,
                     padding: 12,
                     displayColors: false,
@@ -113,14 +114,14 @@ function renderGrowthChart() {
                     grid: { color: 'rgba(255, 255, 255, 0.04)' },
                     ticks: {
                         color: '#94a3b8',
-                        font: { family: 'Outfit', size: 11, weight: '600' }
+                        font: { family: 'Outfit', size: 10, weight: '600' }
                     }
                 },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     ticks: {
                         color: '#64748b',
-                        font: { family: 'Outfit', size: 11 },
+                        font: { family: 'Outfit', size: 10 },
                         callback: function(val) {
                             if (val >= 10000) return (val / 10000) + '억';
                             return val + '만';
@@ -142,40 +143,48 @@ function renderCategoryChart(categories) {
 
     const labels = [];
     const data = [];
-    const colors = [
-        '#f43f5e', '#fb7185', '#ec4899', '#d946ef', 
-        '#a855f7', '#8b5cf6', '#6366f1', '#3b82f6', 
-        '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#fbbf24'
+    const colorPalette = [
+        '#f43f5e', '#38bdf8', '#fbbf24', '#a855f7', 
+        '#10b981', '#ec4899', '#6366f1', '#06b6d4', 
+        '#fb923c', '#8b5cf6', '#14b8a6', '#f472b6'
     ];
 
-    if (categories) {
+    if (categories && typeof categories === 'object') {
         Object.entries(categories).forEach(([cat, val]) => {
-            if (val > 0) {
+            const numVal = Number(val) || 0;
+            if (numVal > 0 && !cat.includes('저축') && !cat.includes('적금') && !cat.includes('청약')) {
                 labels.push(cat);
-                data.push(val);
+                data.push(numVal);
             }
         });
     }
 
     if (categoryChartInstance) {
         categoryChartInstance.destroy();
+        categoryChartInstance = null;
     }
 
     if (data.length === 0) {
         categoryChartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['지출 없음'],
+                labels: ['지출 없음 / 집계 대기'],
                 datasets: [{
                     data: [1],
-                    backgroundColor: ['rgba(255, 255, 255, 0.05)'],
+                    backgroundColor: ['rgba(255, 255, 255, 0.08)'],
                     borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+                    }
+                },
+                cutout: '70%'
             }
         });
         return;
@@ -187,7 +196,7 @@ function renderCategoryChart(categories) {
             labels: labels,
             datasets: [{
                 data: data,
-                backgroundColor: colors.slice(0, data.length),
+                backgroundColor: colorPalette.slice(0, data.length),
                 borderColor: '#141826',
                 borderWidth: 2,
                 hoverOffset: 6
@@ -201,20 +210,28 @@ function renderCategoryChart(categories) {
                     position: 'right',
                     labels: {
                         color: '#94a3b8',
-                        font: { family: 'Outfit', size: 11 },
+                        font: { family: 'Outfit', size: 11, weight: '500' },
                         boxWidth: 8,
                         padding: 6
                     }
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#fbbf24',
+                    bodyColor: '#f8fafc',
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                    borderWidth: 1,
+                    padding: 10,
                     callbacks: {
                         label: function(context) {
-                            return ` ${context.label}: ${formatKRW(context.raw)}`;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? ((context.raw / total) * 100).toFixed(1) : 0;
+                            return ` ${context.label}: ${formatKRW(context.raw)} (${pct}%)`;
                         }
                     }
                 }
             },
-            cutout: '68%'
+            cutout: '65%'
         }
     });
 }
@@ -279,7 +296,7 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
         const type = tx.type || '';
         if (type === '지출' || type === '소비' || type === 'consumption') {
             if (acc.includes('현대') || acc.includes('카드') || acc.includes('hyundai')) {
-                cardSpent += tx.amount || 0;
+                cardSpent += (Number(tx.amount) || 0);
             }
         }
     });
@@ -328,10 +345,10 @@ async function loadDashboardData(month) {
         };
 
         const summary = yerinData.summary || {};
-        const income = summary.income || 0;
-        const consumption = summary.consumption || 0;
-        const savings = summary.savings || 0;
-        const balance = summary.balance || (income - consumption - savings);
+        const income = Number(summary.income) || 0;
+        const consumption = Number(summary.consumption) || 0;
+        const savings = Number(summary.savings) || 0;
+        const balance = summary.balance !== undefined ? Number(summary.balance) : (income - consumption - savings);
 
         // Bind Live Metrics
         document.getElementById('liveIncome').innerText = formatKRW(income);
