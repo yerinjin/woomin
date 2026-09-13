@@ -2,8 +2,9 @@
 let growthChartInstance = null;
 let categoryChartInstance = null;
 
-// App State
-let currentMonth = new Date().getMonth() + 1; // Default to current month (9)
+// App State - Auto-detect today's current month so when months roll over, it is automatically selected
+const today = new Date();
+let currentMonth = today.getMonth() + 1; // 1 to 12 (e.g. 9 for September, 10 for October)
 
 // Helper to format currency
 function formatKRW(val) {
@@ -11,7 +12,72 @@ function formatKRW(val) {
     return Math.round(val).toLocaleString('ko-KR') + '원';
 }
 
-// 1. Initialize Month Selector
+// 1. Initialize Sidebar Tab Navigation
+function initTabNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const tabPanels = {
+        'home': document.getElementById('tab-home'),
+        'roadmap': document.getElementById('tab-roadmap'),
+        'insurance': document.getElementById('tab-insurance'),
+        'stocks': document.getElementById('tab-stocks')
+    };
+
+    const headerTitles = {
+        'home': {
+            title: '📋 월급(250만 원) 세부 황금 분배 & 당월 가계부',
+            subtitle: '월 250만 원 황금 배분 (저축률 35%) 및 당월 실시간 소비 결산'
+        },
+        'roadmap': {
+            title: '👑 순자산 & 2033 마스터 로드맵',
+            subtitle: '2026년 4,300만 ➔ 2030년 1억 ➔ 2033년 1.5억~1.6억 확정 달성 시뮬레이션'
+        },
+        'insurance': {
+            title: '🛡️ 확정 종신보험 환급금 정밀 분석',
+            subtitle: '라이나 2029년 10년 완납(117.6%) & 동양 2030년 7년 완납(130.11% 점프)'
+        },
+        'stocks': {
+            title: '📈 실시간 주식 & 연금 포트폴리오',
+            subtitle: 'IBK 퇴직연금 DC 실시간 시세 + 토스·카카오·미래에셋 ISA 모으기'
+        }
+    };
+
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const tabKey = item.dataset.tab;
+            if (!tabKey) return;
+
+            navItems.forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            Object.entries(tabPanels).forEach(([key, panel]) => {
+                if (panel) {
+                    panel.style.display = (key === tabKey) ? 'flex' : 'none';
+                }
+            });
+
+            // Update Header Title & Subtitle
+            const pageTitle = document.getElementById('pageTitle');
+            const pageSubtitle = document.getElementById('pageSubtitle');
+            if (headerTitles[tabKey]) {
+                if (pageTitle) pageTitle.innerText = headerTitles[tabKey].title;
+                if (pageSubtitle) pageSubtitle.innerText = headerTitles[tabKey].subtitle;
+            }
+
+            // Trigger Chart Render / Resize when tab becomes active
+            if (tabKey === 'roadmap') {
+                setTimeout(() => {
+                    renderGrowthChart();
+                }, 50);
+            } else if (tabKey === 'home') {
+                setTimeout(() => {
+                    if (categoryChartInstance) categoryChartInstance.resize();
+                }, 50);
+            }
+        });
+    });
+}
+
+// 2. Initialize Month Selector (Defaults to current active month)
 function initMonthSelector() {
     const container = document.getElementById('monthButtons');
     if (!container) return;
@@ -31,7 +97,7 @@ function initMonthSelector() {
     }
 }
 
-// 1-1. Initialize Stock Tabs
+// 3. Initialize Stock Tabs (Inside Tab 4)
 function initStockTabs() {
     const tabButtons = document.querySelectorAll('.stk-tab-btn');
     const tabContents = {
@@ -56,7 +122,7 @@ function initStockTabs() {
     });
 }
 
-// 2. Render 2026~2033 Asset Growth Projection Chart
+// 4. Render 2026~2033 Asset Growth Projection Chart
 function renderGrowthChart() {
     const canvas = document.getElementById('growthChart');
     if (!canvas) return;
@@ -160,7 +226,7 @@ function renderGrowthChart() {
     });
 }
 
-// 3. Render Spending Category Doughnut Chart
+// 5. Render Spending Category Doughnut Chart
 function renderCategoryChart(categories) {
     const canvas = document.getElementById('categoryChart');
     if (!canvas) return;
@@ -261,7 +327,7 @@ function renderCategoryChart(categories) {
     });
 }
 
-// 4. Render Calendar Grid
+// 6. Render Calendar Grid
 function renderCalendar(year, month, noSpendDays = []) {
     const container = document.getElementById('calendarGrid');
     const header = document.getElementById('calMonthHeader');
@@ -280,8 +346,9 @@ function renderCalendar(year, month, noSpendDays = []) {
         container.appendChild(cell);
     }
 
-    const today = new Date();
-    const isCurrentYearMonth = (year === today.getFullYear() && month === (today.getMonth() + 1));
+    const currentYear = today.getFullYear();
+    const currentActualMonth = today.getMonth() + 1;
+    const isCurrentYearMonth = (year === currentYear && month === currentActualMonth);
     const currentDayNum = today.getDate();
 
     // Days cells
@@ -304,7 +371,7 @@ function renderCalendar(year, month, noSpendDays = []) {
     }
 }
 
-// 5. Update Hyundai Card Diet Tracker
+// 7. Update Hyundai Card Diet Tracker
 function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
     const progressBar = document.getElementById('dietProgressBar');
     const spentText = document.getElementById('dietSpentAmount');
@@ -334,6 +401,9 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
         cardSpent = consumptionTotal;
     }
 
+    const remaining = Math.max(0, MONTHLY_TARGET - cardSpent);
+    const pct = Math.min(100, Math.max(0, (cardSpent / MONTHLY_TARGET) * 100));
+
     if (progressBar) progressBar.style.width = `${pct}%`;
     if (spentText) spentText.innerText = formatKRW(cardSpent);
     if (remainingText) remainingText.innerText = formatKRW(remaining);
@@ -354,7 +424,7 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
     }
 }
 
-// 6. Load and Render Dashboard Data
+// 8. Load and Render Dashboard Data for Given Month
 async function loadDashboardData(month) {
     try {
         const titleElem = document.getElementById('ledgerMonthTitle');
@@ -364,82 +434,75 @@ async function loadDashboardData(month) {
         if (!response.ok) {
             throw new Error(`API error: ${response.status}`);
         }
-
         const data = await response.json();
-        console.log("Yerin Dashboard data:", data);
 
-        const yerinData = data.yerin || {
-            summary: { income: 0, consumption: 0, savings: 0, balance: 0 },
-            categories: {},
-            noSpendDays: [],
-            transactions: []
-        };
-
-        const summary = yerinData.summary || {};
-        const income = Number(summary.income) || 0;
-        const consumption = Number(summary.consumption) || 0;
-        const savings = Number(summary.savings) || 0;
-        const balance = summary.balance !== undefined ? Number(summary.balance) : (income - consumption - savings);
-
-        // Bind Live Metrics
-        document.getElementById('liveIncome').innerText = formatKRW(income);
-        document.getElementById('liveExpense').innerText = formatKRW(consumption);
-        document.getElementById('liveSavings').innerText = formatKRW(savings);
-        
+        // 1. Update Metrics
+        const incomeElem = document.getElementById('liveIncome');
+        const expenseElem = document.getElementById('liveExpense');
+        const savingsElem = document.getElementById('liveSavings');
         const balanceElem = document.getElementById('liveBalance');
-        balanceElem.innerText = formatKRW(balance);
-        if (balance < 0) {
-            balanceElem.className = 'val expense-color';
-        } else {
-            balanceElem.className = 'val balance-color';
-        }
+        const savingsRateElem = document.getElementById('liveSavingsRate');
 
-        let savingsRate = 0;
-        if (income > 0) {
-            savingsRate = ((savings / income) * 100).toFixed(1);
-        }
-        document.getElementById('liveSavingsRate').innerText = `저축률: ${savingsRate}%`;
+        const inc = data.total_income || 0;
+        const exp = data.total_expense || 0;
+        const sav = data.total_savings || 0;
+        const bal = inc - exp - sav;
+        const savRate = inc > 0 ? (((sav + Math.max(0, bal)) / inc) * 100).toFixed(1) : 0;
 
-        // Update Charts & Visuals
-        renderCategoryChart(yerinData.categories);
-        renderCalendar(2026, month, yerinData.noSpendDays);
-        updateCardDietTracker(yerinData.transactions, consumption);
+        if (incomeElem) incomeElem.innerText = formatKRW(inc);
+        if (expenseElem) expenseElem.innerText = formatKRW(exp);
+        if (savingsElem) savingsElem.innerText = formatKRW(sav);
+        if (balanceElem) balanceElem.innerText = formatKRW(bal);
+        if (savingsRateElem) savingsRateElem.innerText = `총 저축률: ${savRate}%`;
+
+        // 2. Update Hyundai Card Diet
+        updateCardDietTracker(data.transactions || [], exp);
+
+        // 3. Render Spending Category Chart
+        renderCategoryChart(data.categories || {});
+
+        // 4. Render Calendar Grid
+        renderCalendar(2026, month, data.no_spend_days || []);
 
     } catch (err) {
-        console.error("Error loading Yerin dashboard:", err);
+        console.error("Failed to load month data:", err);
     }
 }
 
-// 7. Load Real-Time Live Portfolio (Pension & Stock holdings)
+// 9. Fetch Live Stock & Pension Portfolio from Realtime API
 async function loadLivePortfolio() {
     try {
-        const res = await fetch('/api/portfolio');
+        const res = await fetch('/api/stock');
         if (!res.ok) return;
         const data = await res.json();
-        if (!data || !data.pension || !data.stocks) return;
+        if (!data || !data.stocks) return;
 
-        // 1. Update Pension Section
-        const pension = data.pension;
-        const pensionSub = document.getElementById('pensionSubtitle');
-        if (pensionSub) {
-            const sign = pension.profit >= 0 ? '+' : '';
-            const pctSign = pension.return_pct >= 0 ? '+' : '';
-            pensionSub.innerHTML = `총 6건 운용 • 평가금액 <b>${formatKRW(pension.total_val)}</b> (${sign}${formatKRW(pension.profit)} / ${pctSign}${pension.return_pct}%)`;
-        }
-        const pensionSim = document.getElementById('pensionCurrentValSim');
-        if (pensionSim) {
-            pensionSim.innerText = formatKRW(pension.total_val);
-        }
-
-        // 2. Update Stock Portfolio Header & Tab Buttons
         const stocks = data.stocks;
-        const stockSub = document.getElementById('stockSubtitle');
-        if (stockSub) {
-            const sign = stocks.profit >= 0 ? '+' : '';
-            const pctSign = stocks.return_pct >= 0 ? '+' : '';
-            stockSub.innerHTML = `총 <b>${formatKRW(stocks.total_val)}</b> (${sign}${formatKRW(stocks.profit)} / ${pctSign}${stocks.return_pct}%) • 카카오 / 토스 해외 / 토스 국내`;
+        const pension = data.pension;
+
+        // 1. Update Pension Totals
+        if (pension && pension.total_val) {
+            const pensionSub = document.getElementById('pensionSubtitle');
+            if (pensionSub) {
+                const diff = (pension.total_val || 0) - (pension.total_cost || 0);
+                const sign = diff >= 0 ? '+' : '';
+                pensionSub.innerHTML = `총 6건 운용 • 평가금액 <b>${formatKRW(pension.total_val)}</b> (${sign}${formatKRW(diff)} / ${sign}${pension.return_pct || 0}%)`;
+            }
+            const pensionSim = document.getElementById('pensionCurrentValSim');
+            if (pensionSim) {
+                pensionSim.innerText = formatKRW(pension.total_val);
+            }
         }
 
+        // 2. Update Stock Subtitle
+        if (stocks && stocks.total_val) {
+            const stockSub = document.getElementById('stockSubtitle');
+            if (stockSub) {
+                stockSub.innerText = `총 ${formatKRW(stocks.total_val)} • 카카오페이 / 토스 해외 / 토스 국내`;
+            }
+        }
+
+        // Update tab labels
         const btnKakao = document.getElementById('tabBtnKakao');
         if (btnKakao && stocks.kakao) {
             btnKakao.innerText = `카카오 (${(stocks.kakao.val / 10000).toFixed(0)}만)`;
@@ -529,9 +592,9 @@ async function loadLivePortfolio() {
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', () => {
+    initTabNavigation();
     initMonthSelector();
     initStockTabs();
-    renderGrowthChart();
     loadDashboardData(currentMonth);
     loadLivePortfolio();
 });
