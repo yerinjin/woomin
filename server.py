@@ -813,6 +813,34 @@ def fetch_live_portfolio():
                 {"name": "QQQ / MSFT / MCD / TSLA", "shares": "소수점", "val": round(k_fractional_val), "cost": k_fractional_cost, "return_pct": round((k_fractional_val - k_fractional_cost)/k_fractional_cost*100, 2), "cat": "미국 우량주 분산"},
                 {"name": "빅베어 AI / 실SQ / 플루언스 등", "shares": "성장 6종", "val": round(t_sm_val), "cost": t_sm_cost, "return_pct": round((t_sm_val - t_sm_cost)/t_sm_cost*100, 2), "cat": "미국 AI·로보틱스"}
             ],
+            "kakao": {
+                "val": round(kakao_val),
+                "items": [
+                    {"name": "KODEX 미국나스닥100", "shares": 26, "val": round(k_nas_val), "price": k_nas_price, "cost": k_nas_cost, "return_pct": round((k_nas_val - k_nas_cost)/k_nas_cost*100, 2)},
+                    {"name": "엔비디아 (NVDA)", "shares": 1.5, "val": round(k_nvda_val), "price_usd": nvda_usd, "cost": k_nvda_cost, "return_pct": round((k_nvda_val - k_nvda_cost)/k_nvda_cost*100, 2)},
+                    {"name": "SOL 조선TOP3플러스", "shares": 4, "val": round(k_sol_val), "price": sol_price, "cost": k_sol_cost, "return_pct": round((k_sol_val - k_sol_cost)/k_sol_cost*100, 2)},
+                    {"name": "QQQ / MSFT / MCD / TSLA", "shares": "소수점", "val": round(k_fractional_val), "cost": k_fractional_cost, "return_pct": round((k_fractional_val - k_fractional_cost)/k_fractional_cost*100, 2)}
+                ]
+            },
+            "toss_us": {
+                "val": round(toss_us_val),
+                "items": [
+                    {"name": "인텔 (INTC)", "shares": 2, "val": round(t_intc_val), "price_usd": intc_usd, "cost": t_intc_cost, "return_pct": round((t_intc_val - t_intc_cost)/t_intc_cost*100, 2)},
+                    {"name": "리졸브 AI (RZLV)", "shares": 53, "val": round(t_rzlv_val), "price_usd": rzlv_usd, "cost": t_rzlv_cost, "return_pct": round((t_rzlv_val - t_rzlv_cost)/t_rzlv_cost*100, 2)},
+                    {"name": "슈뢰딩거 (SDGR)", "shares": 2, "val": round(t_sdgr_val), "price_usd": sdgr_usd, "cost": t_sdgr_cost, "return_pct": round((t_sdgr_val - t_sdgr_cost)/t_sdgr_cost*100, 2)},
+                    {"name": "빅베어 AI / 실SQ / 플루언스 / 아베 / 퀀텀 / 리커젼", "shares": "소형 6종", "val": round(t_sm_val), "cost": t_sm_cost, "return_pct": round((t_sm_val - t_sm_cost)/t_sm_cost*100, 2)}
+                ]
+            },
+            "toss_kr": {
+                "val": round(toss_kr_val),
+                "items": [
+                    {"name": "한화오션", "shares": 1, "val": round(t_ocean_val), "price": h_ocean_price, "cost": t_ocean_cost, "return_pct": round((t_ocean_val - t_ocean_cost)/t_ocean_cost*100, 2)},
+                    {"name": "SOL 조선TOP3플러스", "shares": 2, "val": round(t_sol_val), "price": sol_price, "cost": t_sol_cost, "return_pct": round((t_sol_val - t_sol_cost)/t_sol_cost*100, 2)},
+                    {"name": "한화솔루션", "shares": 1, "val": round(t_hsol_val), "price": h_sol_price, "cost": t_hsol_cost, "return_pct": round((t_hsol_val - t_hsol_cost)/t_hsol_cost*100, 2)},
+                    {"name": "TIGER 미국S&P500", "shares": 1, "val": round(t_sp500_val), "price": sp500_price, "cost": t_sp500_cost, "return_pct": round((t_sp500_val - t_sp500_cost)/t_sp500_cost*100, 2)},
+                    {"name": "셀바스AI / SG / 오리엔탈정공", "shares": "3종", "val": round(t_others_val), "cost": t_others_cost, "return_pct": round((t_others_val - t_others_cost)/t_others_cost*100, 2)}
+                ]
+            },
             "mirae_items": [
                 {"name": "KODEX 미국나스닥100", "shares": "26주", "val": round(k_nas_val), "price": k_nas_price, "cost": k_nas_cost, "return_pct": round((k_nas_val - k_nas_cost)/k_nas_cost*100, 2), "cat": "미국 대표 지수 ETF"},
                 {"name": "엔비디아 (NVDA)", "shares": "1.5주", "val": round(k_nvda_val), "price_usd": nvda_usd, "cost": k_nvda_cost, "return_pct": round((k_nvda_val - k_nvda_cost)/k_nvda_cost*100, 2), "cat": "미국 글로벌 AI 대장주"},
