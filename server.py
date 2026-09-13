@@ -76,6 +76,20 @@ def parse_numbers_to_cells_dict(filepath, sheet_name):
         print(f"Error parsing Numbers file {filepath}: {e}")
         return {}
 
+def clean_memo_text(val, amount=0):
+    if not val:
+        return ''
+    s = str(val).strip()
+    if s in ['◀', '▶', '-', '0', '0.0', 'none', 'None', 'nan']:
+        return ''
+    # If pure number or negative number (e.g. -50000, -550000, balance artifacts)
+    try:
+        float(s.replace(',', ''))
+        return ''
+    except ValueError:
+        pass
+    return s
+
 # --- Excel Parser (Format B - Flat 가계부입력 Sheet) ---
 def parse_excel_format_b(cells, shared_strings, target_month):
     rows = {}
@@ -99,15 +113,21 @@ def parse_excel_format_b(cells, shared_strings, target_month):
         try:
             dt = datetime.datetime.strptime(date_str, '%Y-%m-%d')
             if dt.year == 2026 and dt.month == target_month:
+                amount = float(r_data.get('I', '0') or 0)
+                desc = clean_memo_text(r_data.get('F', ''), amount)
+                detail = clean_memo_text(r_data.get('J', ''), amount)
+                subcategory = r_data.get('E', '').strip()
+                if subcategory in ['◀', '▶', '-']: subcategory = ''
+
                 transactions.append({
                     'date': date_str,
                     'type': r_data.get('C', '').strip(),
                     'category': r_data.get('D', '').strip(),
-                    'subcategory': r_data.get('E', '').strip(),
-                    'desc': r_data.get('F', '').strip(),
+                    'subcategory': subcategory,
+                    'desc': desc,
                     'account': r_data.get('G', '').strip(),
-                    'amount': float(r_data.get('I', '0') or 0),
-                    'detail': r_data.get('J', '').strip()
+                    'amount': amount,
+                    'detail': detail
                 })
         except Exception:
             pass
@@ -137,9 +157,8 @@ def parse_excel_format_a(cells, shared_strings, target_month):
                 amount = float(r_data.get('H', '0') or 0)
                 if amount > 0:
                     subcategory = r_data.get('E', '').strip()
-                    desc = r_data.get('F', '').strip()
-                    # UI filtering for calendar arrows
-                    if subcategory in ['◀', '▶']:
+                    desc = clean_memo_text(r_data.get('F', ''), amount)
+                    if subcategory in ['◀', '▶', '-']:
                         subcategory = ''
                         
                     transactions.append({
@@ -163,12 +182,10 @@ def parse_excel_format_a(cells, shared_strings, target_month):
                 amount = float(r_data.get('R', r_data.get('P', '0')) or 0)
                 if amount > 0:
                     subcategory = r_data.get('M', '').strip()
-                    desc = r_data.get('N', '').strip()
-                    # UI filtering for calendar arrows
-                    if subcategory in ['◀', '▶']:
+                    desc = clean_memo_text(r_data.get('N', ''), amount)
+                    detail = clean_memo_text(r_data.get('S', ''), amount)
+                    if subcategory in ['◀', '▶', '-']:
                         subcategory = ''
-                    if desc in ['◀', '▶']:
-                        desc = ''
                         
                     transactions.append({
                         'date': exp_date,
@@ -178,7 +195,7 @@ def parse_excel_format_a(cells, shared_strings, target_month):
                         'desc': desc,
                         'account': r_data.get('K', '').strip() or '계좌이체',
                         'amount': amount,
-                        'detail': r_data.get('S', '').strip()
+                        'detail': detail
                     })
             except Exception:
                 pass
