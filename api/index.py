@@ -384,6 +384,185 @@ def parse_parents_loan_yearly():
         "2026": { "principal": 3227257.0, "interest": 5429867.0, "total": 8657124.0 } # 8월까지 누적
     }
 
+PORTFOLIO_CACHE = {'time': 0, 'data': None}
+
+def fetch_live_portfolio():
+    global PORTFOLIO_CACHE
+    now = time.time()
+    if PORTFOLIO_CACHE['data'] and (now - PORTFOLIO_CACHE['time'] < 60):
+        return PORTFOLIO_CACHE['data']
+
+    kr_codes = ["042660", "466920", "009830", "360750", "133690", "453850", "219480", "449180", "086960", "255220", "025340"]
+    kr_quotes = {}
+    try:
+        code_str = ",".join(kr_codes)
+        url = f"https://polling.finance.naver.com/api/realtime?query=SERVICE_ITEM:{code_str}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        res_bytes = urllib.request.urlopen(req, timeout=3).read()
+        text = res_bytes.decode("euc-kr", errors="ignore")
+        data = json.loads(text)
+        for item in data.get("result", {}).get("areas", [])[0].get("datas", []):
+            cd = item.get("cd")
+            nv = float(item.get("nv", 0) or 0)
+            cr = float(item.get("cr", 0) or 0)
+            kr_quotes[cd] = {"price": nv, "changeRate": cr}
+    except Exception as e:
+        print(f"Naver error: {e}")
+
+    us_symbols = ["USDKRW=X", "NVDA", "INTC", "RZLV", "SDGR", "BBAI", "LAES", "FLNC", "ARBE", "QSI", "RXRX", "QQQ", "MSFT", "MCD", "TSLA"]
+    us_quotes = {}
+    for sym in us_symbols:
+        try:
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1d&range=1d"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+            res = urllib.request.urlopen(req, timeout=2).read()
+            data = json.loads(res)
+            meta = data["chart"]["result"][0]["meta"]
+            price = meta.get("regularMarketPrice", 0)
+            prev = meta.get("chartPreviousClose") or meta.get("previousClose") or price
+            change = price - prev
+            change_pct = (change / prev * 100) if prev else 0
+            us_quotes[sym] = {"price": price, "change": change, "changePercent": round(change_pct, 2)}
+        except Exception as e:
+            us_quotes[sym] = {"price": None, "error": str(e)}
+
+    rate = us_quotes.get("USDKRW=X", {}).get("price") or 1335.98
+
+    # Pension
+    p_busan_val = 2906010; p_busan_cost = 2870059
+    p_ace_sp_shares = 190; p_ace_sp_cost = 2598250
+    p_ace_sp_price = kr_quotes.get("453850", {}).get("price")
+    if not p_ace_sp_price or p_ace_sp_price < 10000: p_ace_sp_price = 13695.0
+    p_ace_sp_val = p_ace_sp_shares * p_ace_sp_price
+
+    p_kodex_sp_shares = 87; p_kodex_sp_cost = 1468125
+    p_kodex_sp_price = kr_quotes.get("449180", {}).get("price") or 17150.0
+    p_kodex_sp_val = p_kodex_sp_shares * p_kodex_sp_price
+
+    p_ace_nas_shares = 75; p_ace_nas_cost = 1108125
+    p_ace_nas_price = 14840.0
+    p_ace_nas_val = p_ace_nas_shares * p_ace_nas_price
+
+    p_cash_val = 1447580; p_cash_cost = 1446699
+
+    pension_total_val = p_busan_val + p_ace_sp_val + p_kodex_sp_val + p_ace_nas_val + p_cash_val
+    pension_total_cost = p_busan_cost + p_ace_sp_cost + p_kodex_sp_cost + p_ace_nas_cost + p_cash_cost
+    pension_profit = pension_total_val - pension_total_cost
+    pension_return_pct = round((pension_profit / pension_total_cost * 100), 2)
+
+    # Kakao
+    k_nas_price = kr_quotes.get("133690", {}).get("price") or 26165.0
+    if k_nas_price > 50000: k_nas_price = 26165.0
+    k_nas_val = 26 * k_nas_price; k_nas_cost = 610340
+
+    nvda_usd = us_quotes.get("NVDA", {}).get("price") or 225.73
+    k_nvda_val = 1.5 * nvda_usd * rate; k_nvda_cost = 391312
+
+    sol_price = kr_quotes.get("466920", {}).get("price") or 28350.0
+    k_sol_val = 4 * sol_price; k_sol_cost = 141900
+
+    qqq_usd = us_quotes.get("QQQ", {}).get("price") or 718.36
+    msft_usd = us_quotes.get("MSFT", {}).get("price") or 493.95
+    mcd_usd = us_quotes.get("MCD", {}).get("price") or 255.81
+    tsla_usd = us_quotes.get("TSLA", {}).get("price") or 368.16
+    k_fractional_val = (0.072 * qqq_usd + 0.025 * msft_usd + 0.008 * mcd_usd + 0.0042 * tsla_usd) * rate
+    k_fractional_cost = 85000
+
+    kakao_val = k_nas_val + k_nvda_val + k_sol_val + k_fractional_val
+    kakao_cost = k_nas_cost + k_nvda_cost + k_sol_cost + k_fractional_cost
+
+    # Toss US
+    intc_usd = us_quotes.get("INTC", {}).get("price") or 104.47
+    t_intc_val = 2 * intc_usd * rate; t_intc_cost = 114934
+
+    rzlv_usd = us_quotes.get("RZLV", {}).get("price") or 2.31
+    t_rzlv_val = 53 * rzlv_usd * rate; t_rzlv_cost = 328046
+
+    sdgr_usd = us_quotes.get("SDGR", {}).get("price") or 20.03
+    t_sdgr_val = 2 * sdgr_usd * rate; t_sdgr_cost = 57560
+
+    bbai_usd = us_quotes.get("BBAI", {}).get("price") or 2.92
+    laes_usd = us_quotes.get("LAES", {}).get("price") or 2.45
+    flnc_usd = us_quotes.get("FLNC", {}).get("price") or 11.04
+    arbe_usd = us_quotes.get("ARBE", {}).get("price") or 0.7431
+    qsi_usd = us_quotes.get("QSI", {}).get("price") or 0.76
+    rxrx_usd = us_quotes.get("RXRX", {}).get("price") or 3.44
+    t_sm_val = (12 * bbai_usd + 10 * laes_usd + 2 * flnc_usd + 24 * arbe_usd + 20 * qsi_usd + 4 * rxrx_usd) * rate
+    t_sm_cost = 160882
+
+    toss_us_val = t_intc_val + t_rzlv_val + t_sdgr_val + t_sm_val
+    toss_us_cost = t_intc_cost + t_rzlv_cost + t_sdgr_cost + t_sm_cost
+
+    # Toss KR
+    h_ocean_price = kr_quotes.get("042660", {}).get("price") or 88100.0
+    t_ocean_val = 1 * h_ocean_price; t_ocean_cost = 78000
+    t_sol_val = 2 * sol_price; t_sol_cost = 59400
+    h_sol_price = kr_quotes.get("009830", {}).get("price") or 30800.0
+    t_hsol_val = 1 * h_sol_price; t_hsol_cost = 30700
+    sp500_price = kr_quotes.get("360750", {}).get("price") or 25460.0
+    t_sp500_val = 1 * sp500_price; t_sp500_cost = 22400
+    t_others_val = 39659; t_others_cost = 48880
+
+    toss_kr_val = t_ocean_val + t_sol_val + t_hsol_val + t_sp500_val + t_others_val
+    toss_kr_cost = t_ocean_cost + t_sol_cost + t_hsol_cost + t_sp500_cost + t_others_cost
+
+    total_stocks_val = kakao_val + toss_us_val + toss_kr_val
+    total_stocks_cost = kakao_cost + toss_us_cost + toss_kr_cost
+
+    payload = {
+        "rate": rate,
+        "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "pension": {
+            "total_val": round(pension_total_val),
+            "total_cost": round(pension_total_cost),
+            "profit": round(pension_profit),
+            "return_pct": pension_return_pct,
+            "items": [
+                {"name": "부산은행 정기예금 (1년) 2건", "val": p_busan_val, "cost": p_busan_cost, "return_pct": 1.25},
+                {"name": "한국투자 ACE S&P500 미국채혼합 (190주)", "val": round(p_ace_sp_val), "cost": p_ace_sp_cost, "price": p_ace_sp_price, "return_pct": round((p_ace_sp_val - p_ace_sp_cost)/p_ace_sp_cost*100, 2)},
+                {"name": "삼성 KODEX 미국S&P500 (H) (87주)", "val": round(p_kodex_sp_val), "cost": p_kodex_sp_cost, "price": p_kodex_sp_price, "return_pct": round((p_kodex_sp_val - p_kodex_sp_cost)/p_kodex_sp_cost*100, 2)},
+                {"name": "한국투자 ACE 나스닥100 미국채혼합 (75주)", "val": round(p_ace_nas_val), "cost": p_ace_nas_cost, "price": p_ace_nas_price, "return_pct": round((p_ace_nas_val - p_ace_nas_cost)/p_ace_nas_cost*100, 2)},
+                {"name": "현금성자산 기업적립금", "val": p_cash_val, "cost": p_cash_cost, "return_pct": 0.06}
+            ]
+        },
+        "stocks": {
+            "total_val": round(total_stocks_val),
+            "total_cost": round(total_stocks_cost),
+            "profit": round(total_stocks_val - total_stocks_cost),
+            "return_pct": round((total_stocks_val - total_stocks_cost)/total_stocks_cost*100, 2),
+            "brokerage": "미래에셋증권 (통합)",
+            "items": [
+                {"name": "KODEX 미국나스닥100", "shares": "26주", "val": round(k_nas_val), "price": k_nas_price, "cost": k_nas_cost, "return_pct": round((k_nas_val - k_nas_cost)/k_nas_cost*100, 2), "cat": "미국 대표 지수 ETF"},
+                {"name": "엔비디아 (NVDA)", "shares": "1.5주", "val": round(k_nvda_val), "price_usd": nvda_usd, "cost": k_nvda_cost, "return_pct": round((k_nvda_val - k_nvda_cost)/k_nvda_cost*100, 2), "cat": "미국 글로벌 AI 대장주"},
+                {"name": "인텔 (INTC)", "shares": "2주", "val": round(t_intc_val), "price_usd": intc_usd, "cost": t_intc_cost, "return_pct": round((t_intc_val - t_intc_cost)/t_intc_cost*100, 2), "cat": "미국 반도체 (대박 수익)"},
+                {"name": "SOL 조선TOP3플러스", "shares": "6주", "val": round(k_sol_val + t_sol_val), "price": sol_price, "cost": k_sol_cost + t_sol_cost, "return_pct": round(((k_sol_val + t_sol_val) - (k_sol_cost + t_sol_cost))/(k_sol_cost + t_sol_cost)*100, 2), "cat": "국내 조선 대표 ETF"},
+                {"name": "한화오션", "shares": "1주", "val": round(t_ocean_val), "price": h_ocean_price, "cost": t_ocean_cost, "return_pct": round((t_ocean_val - t_ocean_cost)/t_ocean_cost*100, 2), "cat": "국내 조선·방산"},
+                {"name": "리졸브 AI (RZLV)", "shares": "53주", "val": round(t_rzlv_val), "price_usd": rzlv_usd, "cost": t_rzlv_cost, "return_pct": round((t_rzlv_val - t_rzlv_cost)/t_rzlv_cost*100, 2), "cat": "미국 AI 이커머스"},
+                {"name": "슈뢰딩거 (SDGR)", "shares": "2주", "val": round(t_sdgr_val), "price_usd": sdgr_usd, "cost": t_sdgr_cost, "return_pct": round((t_sdgr_val - t_sdgr_cost)/t_sdgr_cost*100, 2), "cat": "미국 AI 바이오"},
+                {"name": "TIGER 미국S&P500", "shares": "1주", "val": round(t_sp500_val), "price": sp500_price, "cost": t_sp500_cost, "return_pct": round((t_sp500_val - t_sp500_cost)/t_sp500_cost*100, 2), "cat": "미국 S&P500 ETF"},
+                {"name": "한화솔루션", "shares": "1주", "val": round(t_hsol_val), "price": h_sol_price, "cost": t_hsol_cost, "return_pct": round((t_hsol_val - t_hsol_cost)/t_hsol_cost*100, 2), "cat": "국내 친환경"},
+                {"name": "QQQ / MSFT / MCD / TSLA", "shares": "소수점", "val": round(k_fractional_val), "cost": k_fractional_cost, "return_pct": round((k_fractional_val - k_fractional_cost)/k_fractional_cost*100, 2), "cat": "미국 우량주 분산"},
+                {"name": "빅베어 AI / 실SQ / 플루언스 등", "shares": "성장 6종", "val": round(t_sm_val), "cost": t_sm_cost, "return_pct": round((t_sm_val - t_sm_cost)/t_sm_cost*100, 2), "cat": "미국 AI·로보틱스"}
+            ],
+            "mirae_items": [
+                {"name": "KODEX 미국나스닥100", "shares": "26주", "val": round(k_nas_val), "price": k_nas_price, "cost": k_nas_cost, "return_pct": round((k_nas_val - k_nas_cost)/k_nas_cost*100, 2), "cat": "미국 대표 지수 ETF"},
+                {"name": "엔비디아 (NVDA)", "shares": "1.5주", "val": round(k_nvda_val), "price_usd": nvda_usd, "cost": k_nvda_cost, "return_pct": round((k_nvda_val - k_nvda_cost)/k_nvda_cost*100, 2), "cat": "미국 글로벌 AI 대장주"},
+                {"name": "인텔 (INTC)", "shares": "2주", "val": round(t_intc_val), "price_usd": intc_usd, "cost": t_intc_cost, "return_pct": round((t_intc_val - t_intc_cost)/t_intc_cost*100, 2), "cat": "미국 반도체 (대박 수익)"},
+                {"name": "SOL 조선TOP3플러스", "shares": "6주", "val": round(k_sol_val + t_sol_val), "price": sol_price, "cost": k_sol_cost + t_sol_cost, "return_pct": round(((k_sol_val + t_sol_val) - (k_sol_cost + t_sol_cost))/(k_sol_cost + t_sol_cost)*100, 2), "cat": "국내 조선 대표 ETF"},
+                {"name": "한화오션", "shares": "1주", "val": round(t_ocean_val), "price": h_ocean_price, "cost": t_ocean_cost, "return_pct": round((t_ocean_val - t_ocean_cost)/t_ocean_cost*100, 2), "cat": "국내 조선·방산"},
+                {"name": "리졸브 AI (RZLV)", "shares": "53주", "val": round(t_rzlv_val), "price_usd": rzlv_usd, "cost": t_rzlv_cost, "return_pct": round((t_rzlv_val - t_rzlv_cost)/t_rzlv_cost*100, 2), "cat": "미국 AI 이커머스"},
+                {"name": "슈뢰딩거 (SDGR)", "shares": "2주", "val": round(t_sdgr_val), "price_usd": sdgr_usd, "cost": t_sdgr_cost, "return_pct": round((t_sdgr_val - t_sdgr_cost)/t_sdgr_cost*100, 2), "cat": "미국 AI 바이오"},
+                {"name": "TIGER 미국S&P500", "shares": "1주", "val": round(t_sp500_val), "price": sp500_price, "cost": t_sp500_cost, "return_pct": round((t_sp500_val - t_sp500_cost)/t_sp500_cost*100, 2), "cat": "미국 S&P500 ETF"},
+                {"name": "한화솔루션", "shares": "1주", "val": round(t_hsol_val), "price": h_sol_price, "cost": t_hsol_cost, "return_pct": round((t_hsol_val - t_hsol_cost)/t_hsol_cost*100, 2), "cat": "국내 친환경"},
+                {"name": "QQQ / MSFT / MCD / TSLA", "shares": "소수점", "val": round(k_fractional_val), "cost": k_fractional_cost, "return_pct": round((k_fractional_val - k_fractional_cost)/k_fractional_cost*100, 2), "cat": "미국 우량주 분산"},
+                {"name": "빅베어 AI / 실SQ / 플루언스 등", "shares": "성장 6종", "val": round(t_sm_val), "cost": t_sm_cost, "return_pct": round((t_sm_val - t_sm_cost)/t_sm_cost*100, 2), "cat": "미국 AI·로보틱스"}
+            ]
+        }
+    }
+    PORTFOLIO_CACHE['time'] = now
+    PORTFOLIO_CACHE['data'] = payload
+    return payload
+
 class handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urllib.parse.urlparse(self.path)
@@ -487,6 +666,18 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(html_content.encode('utf-8'))
             return
+
+        # --- PORTFOLIO & STOCK LIVE ENDPOINT ---
+        if route in ['portfolio', 'stock'] or self.path.startswith('/api/portfolio') or self.path.startswith('/api/stock'):
+            p_data = fetch_live_portfolio()
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json; charset=utf-8')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Cache-Control', 's-maxage=60, stale-while-revalidate=300')
+            self.end_headers()
+            self.wfile.write(json.dumps(p_data, ensure_ascii=False).encode('utf-8'))
+            return
+
 
         # --- YEARLY TREND ENDPOINT ---
         if route == 'yearly-trend' or self.path.startswith('/api/yearly-trend'):
