@@ -36,8 +36,8 @@ function initTabNavigation() {
             subtitle: '라이나 2029년 10년 완납(117.6%) & 동양 2030년 7년 완납(130.11% 점프)'
         },
         'stocks': {
-            title: '📈 미래에셋 주식 & 연금 포트폴리오',
-            subtitle: 'IBK 퇴직연금 DC 실시간 시세 + 미래에셋증권 단일 통합 포트폴리오'
+            title: '📈 실시간 주식 & 연금 포트폴리오',
+            subtitle: 'IBK 퇴직연금 DC 실시간 시세 + 카카오페이·토스·미래에셋 ISA 앱별 보유 종목'
         }
     };
 
@@ -95,6 +95,31 @@ function initMonthSelector() {
         });
         container.appendChild(btn);
     }
+}
+
+// 2-1. Initialize Stock Portfolio Tabs (보유 증권사 어플별)
+function initStockTabs() {
+    const tabButtons = document.querySelectorAll('.stk-tab-btn');
+    const tabContents = {
+        'kakao': document.getElementById('tab_kakao'),
+        'toss_us': document.getElementById('tab_toss_us'),
+        'toss_kr': document.getElementById('tab_toss_kr'),
+        'isa': document.getElementById('tab_isa')
+    };
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            Object.entries(tabContents).forEach(([k, elem]) => {
+                if (elem) {
+                    elem.style.display = (k === targetTab) ? 'block' : 'none';
+                }
+            });
+        });
+    });
 }
 
 // 3. Render 2026~2033 Asset Growth Projection Chart
@@ -465,7 +490,7 @@ async function loadDashboardData(month) {
     }
 }
 
-// 8. Fetch Live Stock & Pension Portfolio from Realtime API (Unified Mirae Asset)
+// 8. Fetch Live Stock & Pension Portfolio from Realtime API (Brokerage Apps Live Sync)
 async function loadLivePortfolio() {
     try {
         let res = await fetch('/api/portfolio');
@@ -493,31 +518,89 @@ async function loadLivePortfolio() {
             }
         }
 
-        // 2. Update Mirae Asset Consolidated Stocks Subtitle
+        // 2. Update Stock Subtitle
         if (stocks && stocks.total_val) {
             const stockSub = document.getElementById('stockSubtitle');
             if (stockSub) {
                 const diff = (stocks.total_val || 0) - (stocks.total_cost || 0);
                 const sign = diff >= 0 ? '+' : '';
-                stockSub.innerHTML = `총 평가금액 <b>${formatKRW(stocks.total_val)}</b> (${sign}${formatKRW(diff)} / ${sign}${stocks.return_pct || 0}%) • 미래에셋증권 단일 통합 연동`;
+                stockSub.innerHTML = `총 <b>${formatKRW(stocks.total_val)}</b> (${sign}${formatKRW(diff)} / ${sign}${stocks.return_pct || 0}%) • 네이버증권/야후파이낸스 실시간 시세 연동`;
             }
         }
 
-        // 3. Render Unified Mirae Asset Stock List
-        const miraeList = document.getElementById('miraeStockList');
-        const items = stocks.mirae_items || stocks.items || [];
-        if (miraeList && items.length > 0) {
-            miraeList.innerHTML = items.map(item => {
+        // Update tab buttons with live valuations
+        const btnKakao = document.getElementById('tabBtnKakao');
+        if (btnKakao && stocks.kakao) {
+            btnKakao.innerText = `카카오페이 (${(stocks.kakao.val / 10000).toFixed(0)}만)`;
+        }
+        const btnTossUS = document.getElementById('tabBtnTossUS');
+        if (btnTossUS && stocks.toss_us) {
+            btnTossUS.innerText = `토스 해외 (${(stocks.toss_us.val / 10000).toFixed(0)}만)`;
+        }
+        const btnTossKR = document.getElementById('tabBtnTossKR');
+        if (btnTossKR && stocks.toss_kr) {
+            btnTossKR.innerText = `토스 국내 (${(stocks.toss_kr.val / 10000).toFixed(0)}만)`;
+        }
+
+        // 3. Render Kakao Items
+        const kakaoList = document.getElementById('kakaoStockList');
+        if (kakaoList && stocks.kakao && stocks.kakao.items) {
+            kakaoList.innerHTML = stocks.kakao.items.map(item => {
                 const isPos = item.return_pct >= 0;
                 const sign = isPos ? '+' : '';
                 const diff = (item.val || 0) - (item.cost || 0);
                 const diffSign = diff >= 0 ? '+' : '';
-                const priceInfo = item.price_usd ? `$${item.price_usd}` : (item.price ? `현재가 ${formatKRW(item.price)}` : (item.cat || ''));
                 return `
                     <div class="stock-detail-row">
                         <div class="stk-meta">
-                            <h4>${item.name} <span class="stk-shares">${item.shares}</span></h4>
-                            <p>${item.cat ? item.cat + ' • ' : ''}${priceInfo}</p>
+                            <h4>${item.name} <span class="stk-shares">${item.shares}${typeof item.shares === 'number' ? '주' : ''}</span></h4>
+                            <p>${item.price_usd ? `$${item.price_usd}` : (item.price ? `현재가 ${formatKRW(item.price)}` : '우량주 분산')}</p>
+                        </div>
+                        <div class="stk-amount-group">
+                            <span class="stk-price">${formatKRW(item.val)}</span>
+                            <span class="stk-return ${isPos ? 'positive' : 'negative'}">${sign}${item.return_pct}% (${diffSign}${formatKRW(diff)})</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 4. Render Toss US Items
+        const tossUsList = document.getElementById('tossUsStockList');
+        if (tossUsList && stocks.toss_us && stocks.toss_us.items) {
+            tossUsList.innerHTML = stocks.toss_us.items.map(item => {
+                const isPos = item.return_pct >= 0;
+                const sign = isPos ? '+' : '';
+                const diff = (item.val || 0) - (item.cost || 0);
+                const diffSign = diff >= 0 ? '+' : '';
+                return `
+                    <div class="stock-detail-row">
+                        <div class="stk-meta">
+                            <h4>${item.name} <span class="stk-shares">${item.shares}${typeof item.shares === 'number' ? '주' : ''}</span></h4>
+                            <p>${item.price_usd ? `$${item.price_usd}` : '미국 성장주 포트폴리오'}</p>
+                        </div>
+                        <div class="stk-amount-group">
+                            <span class="stk-price">${formatKRW(item.val)}</span>
+                            <span class="stk-return ${isPos ? 'positive' : 'negative'}">${sign}${item.return_pct}% (${diffSign}${formatKRW(diff)})</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 5. Render Toss KR Items
+        const tossKrList = document.getElementById('tossKrStockList');
+        if (tossKrList && stocks.toss_kr && stocks.toss_kr.items) {
+            tossKrList.innerHTML = stocks.toss_kr.items.map(item => {
+                const isPos = item.return_pct >= 0;
+                const sign = isPos ? '+' : '';
+                const diff = (item.val || 0) - (item.cost || 0);
+                const diffSign = diff >= 0 ? '+' : '';
+                return `
+                    <div class="stock-detail-row">
+                        <div class="stk-meta">
+                            <h4>${item.name} <span class="stk-shares">${item.shares}${typeof item.shares === 'number' ? '주' : ''}</span></h4>
+                            <p>${item.price ? `현재가 ${formatKRW(item.price)}` : '국내 개별주'}</p>
                         </div>
                         <div class="stk-amount-group">
                             <span class="stk-price">${formatKRW(item.val)}</span>
@@ -537,6 +620,7 @@ async function loadLivePortfolio() {
 window.addEventListener('DOMContentLoaded', () => {
     initTabNavigation();
     initMonthSelector();
+    initStockTabs();
     loadDashboardData(currentMonth);
     loadLivePortfolio();
 });
