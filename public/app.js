@@ -13,38 +13,96 @@ let currentCategories = {};
 let currentSelectedCatFilter = 'all';
 let currentSearchQuery = '';
 
-// Category Emoji & Color Map
-const CATEGORY_MAP = {
+// Master Curated Vibrant & High-Contrast Palette for Household Categories (No Overlapping Colors)
+const VIBRANT_CATEGORY_PALETTE = [
+    '#8b5cf6', // 1. Deep Violet (주거비 / 부모님 지원)
+    '#f59e0b', // 2. Bright Amber Gold (모임 / 동아리)
+    '#06b6d4', // 3. Cyan Teal (기타 / 잡비)
+    '#4f46e5', // 4. Indigo / Royal Blue (보험료 / 보장)
+    '#10b981', // 5. Emerald Green (의료비 / 건강 / 약국)
+    '#ec4899', // 6. Hot Pink (경조사회비 / 선물)
+    '#f43f5e', // 7. Rose Coral (식비 / 외식)
+    '#0284c7', // 8. Deep Ocean Blue (유류교통비 / 교통 / 주유)
+    '#eab308', // 9. Sunflower Yellow (용돈 / 개인생활비)
+    '#14b8a6', // 10. Mint Marine (문화생활비 / 여가 / 영화)
+    '#d946ef', // 11. Vivid Magenta (쇼핑 / 패션 / 미용)
+    '#fb923c', // 12. Sunset Orange (카페 / 디저트 / 간식)
+    '#84cc16', // 13. Lime Green (마트 / 장보기 / 생필품)
+    '#38bdf8', // 14. Light Sky Blue (통신비 / 핸드폰 / 구독)
+    '#a855f7', // 15. Purple Orchid (회비 / 정기결제)
+    '#fb7185'  // 16. Light Coral
+];
+
+// Predefined Category Metadata (Emoji Icons & Distinct Primary Colors)
+const PRESET_CATEGORY_MAP = {
+    '주거': { icon: '🏠', color: '#8b5cf6' },
+    '월세': { icon: '🏠', color: '#8b5cf6' },
+    '부모님': { icon: '👨‍👩‍👧', color: '#8b5cf6' },
+    '모임': { icon: '👥', color: '#f59e0b' },
+    '기타': { icon: '💡', color: '#06b6d4' },
+    '보험': { icon: '🛡️', color: '#4f46e5' },
+    '의료': { icon: '🏥', color: '#10b981' },
+    '병원': { icon: '🏥', color: '#10b981' },
+    '약국': { icon: '💊', color: '#10b981' },
+    '경조': { icon: '💌', color: '#ec4899' },
+    '회비': { icon: '🤝', color: '#a855f7' },
     '식비': { icon: '🍚', color: '#f43f5e' },
     '외식': { icon: '🍽️', color: '#fb7185' },
-    '카페': { icon: '☕', color: '#fbbf24' },
-    '디저트': { icon: '🍰', color: '#fcd34d' },
-    '쇼핑': { icon: '🛍️', color: '#ec4899' },
+    '유류': { icon: '⛽', color: '#0284c7' },
+    '교통': { icon: '🚗', color: '#0284c7' },
+    '용돈': { icon: '💸', color: '#eab308' },
+    '문화': { icon: '🎬', color: '#14b8a6' },
+    '여가': { icon: '🏖️', color: '#14b8a6' },
+    '쇼핑': { icon: '🛍️', color: '#d946ef' },
     '패션': { icon: '👗', color: '#f472b6' },
     '미용': { icon: '💄', color: '#fb7185' },
-    '교통': { icon: '🚗', color: '#38bdf8' },
-    '차량': { icon: '🚙', color: '#0ea5e9' },
-    '유류': { icon: '⛽', color: '#0284c7' },
-    '통신': { icon: '📱', color: '#a855f7' },
-    '구독': { icon: '📺', color: '#8b5cf6' },
-    '모임': { icon: '👥', color: '#fb923c' },
-    '회비': { icon: '🤝', color: '#f97316' },
-    '문화': { icon: '🎬', color: '#06b6d4' },
-    '여가': { icon: '🏖️', color: '#22d3ee' },
-    '의료': { icon: '🏥', color: '#10b981' },
-    '건강': { icon: '💊', color: '#34d399' },
-    '마트': { icon: '🛒', color: '#14b8a6' },
-    '생활': { icon: '🏠', color: '#64748b' },
-    '보험': { icon: '🛡️', color: '#6366f1' },
-    '기타': { icon: '💡', color: '#94a3b8' }
+    '카페': { icon: '☕', color: '#fb923c' },
+    '디저트': { icon: '🍰', color: '#fb923c' },
+    '마트': { icon: '🛒', color: '#84cc16' },
+    '생활': { icon: '🧹', color: '#10b981' },
+    '통신': { icon: '📱', color: '#38bdf8' },
+    '구독': { icon: '📺', color: '#38bdf8' }
 };
 
-function getCategoryMeta(catName) {
-    if (!catName) return { icon: '💡', color: '#94a3b8' };
-    for (const [key, val] of Object.entries(CATEGORY_MAP)) {
-        if (catName.includes(key)) return val;
+function getCategoryMeta(catName, index = 0) {
+    if (!catName) {
+        return { icon: '💡', color: VIBRANT_CATEGORY_PALETTE[index % VIBRANT_CATEGORY_PALETTE.length] };
     }
-    return { icon: '🏷️', color: '#94a3b8' };
+    for (const [key, val] of Object.entries(PRESET_CATEGORY_MAP)) {
+        if (catName.includes(key)) {
+            return val;
+        }
+    }
+    // Guaranteed non-overlapping vibrant color fallback
+    return {
+        icon: '🏷️',
+        color: VIBRANT_CATEGORY_PALETTE[index % VIBRANT_CATEGORY_PALETTE.length]
+    };
+}
+
+// Generate Guaranteed 100% Unique Colors for Any List of Categories
+function getDistinctColorsForList(categoriesList) {
+    const usedColors = new Set();
+    const resultColors = [];
+
+    categoriesList.forEach((cat, idx) => {
+        let meta = getCategoryMeta(cat, idx);
+        let color = meta.color;
+
+        // If duplicate color detected among current visible slices, pick the next unique available color
+        if (usedColors.has(color)) {
+            for (const fallbackColor of VIBRANT_CATEGORY_PALETTE) {
+                if (!usedColors.has(fallbackColor)) {
+                    color = fallbackColor;
+                    break;
+                }
+            }
+        }
+        usedColors.add(color);
+        resultColors.push(color);
+    });
+
+    return resultColors;
 }
 
 // Helper to format currency
@@ -276,7 +334,7 @@ function renderGrowthChart() {
     });
 }
 
-// 4. Render Spending Category Doughnut Chart
+// 4. Render Spending Category Doughnut Chart (Home Tab)
 function renderCategoryChart(categories) {
     const canvas = document.getElementById('categoryChart');
     if (!canvas) return;
@@ -284,21 +342,22 @@ function renderCategoryChart(categories) {
 
     const labels = [];
     const data = [];
-    const colorPalette = [
-        '#f43f5e', '#38bdf8', '#fbbf24', '#a855f7', 
-        '#10b981', '#ec4899', '#6366f1', '#06b6d4', 
-        '#fb923c', '#8b5cf6', '#14b8a6', '#f472b6'
-    ];
 
     if (categories && typeof categories === 'object') {
-        Object.entries(categories).forEach(([cat, val]) => {
-            const numVal = Number(val) || 0;
-            if (numVal > 0 && !cat.includes('저축') && !cat.includes('적금') && !cat.includes('청약')) {
-                labels.push(cat);
-                data.push(numVal);
-            }
+        const sorted = Object.entries(categories)
+            .filter(([cat, val]) => {
+                const num = Number(val) || 0;
+                return num > 0 && !cat.includes('저축') && !cat.includes('적금') && !cat.includes('청약');
+            })
+            .sort((a, b) => b[1] - a[1]);
+
+        sorted.forEach(([cat, val]) => {
+            labels.push(cat);
+            data.push(val);
         });
     }
+
+    const colors = getDistinctColorsForList(labels);
 
     if (categoryChartInstance) {
         categoryChartInstance.destroy();
@@ -337,7 +396,7 @@ function renderCategoryChart(categories) {
             labels: labels,
             datasets: [{
                 data: data,
-                backgroundColor: colorPalette.slice(0, data.length),
+                backgroundColor: colors,
                 borderColor: '#141826',
                 borderWidth: 2,
                 hoverOffset: 6
@@ -476,7 +535,7 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
     }
 }
 
-// 6-1. Render Category Detail Doughnut Chart
+// 6-1. Render Category Detail Doughnut Chart (Dedicated Tab)
 function renderCategoryDetailChart(catSumMap, totalExpense) {
     const canvas = document.getElementById('categoryDetailChart');
     if (!canvas) return;
@@ -485,7 +544,7 @@ function renderCategoryDetailChart(catSumMap, totalExpense) {
     const sortedEntries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]);
     const labels = sortedEntries.map(e => e[0]);
     const data = sortedEntries.map(e => e[1]);
-    const colors = sortedEntries.map(e => getCategoryMeta(e[0]).color);
+    const colors = getDistinctColorsForList(labels);
 
     if (categoryDetailChartInstance) {
         categoryDetailChartInstance.destroy();
@@ -569,14 +628,19 @@ function renderCategoryRankings(catSumMap, totalExpense) {
     const container = document.getElementById('catRankingContainer');
     if (!container) return;
 
-    const sortedEntries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    if (sortedEntries.length === 0) {
+    const sortedEntries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]);
+    const labels = sortedEntries.map(e => e[0]);
+    const colors = getDistinctColorsForList(labels);
+
+    const top5 = sortedEntries.slice(0, 5);
+    if (top5.length === 0) {
         container.innerHTML = '<p style="color: #64748b; font-size: 12px; text-align: center; padding: 10px;">기록된 지출 항목이 없습니다.</p>';
         return;
     }
 
-    container.innerHTML = sortedEntries.map(([cat, val], idx) => {
-        const meta = getCategoryMeta(cat);
+    container.innerHTML = top5.map(([cat, val], idx) => {
+        const meta = getCategoryMeta(cat, idx);
+        const color = colors[idx] || meta.color;
         const pct = totalExpense > 0 ? ((val / totalExpense) * 100).toFixed(1) : 0;
         return `
             <div class="cat-rank-item">
@@ -585,7 +649,7 @@ function renderCategoryRankings(catSumMap, totalExpense) {
                     <span class="rank-val"><b>${formatKRW(val)}</b> (${pct}%)</span>
                 </div>
                 <div class="cat-rank-bar-bg">
-                    <div class="cat-rank-bar-fill" style="width: ${pct}%; background: ${meta.color};"></div>
+                    <div class="cat-rank-bar-fill" style="width: ${pct}%; background: ${color};"></div>
                 </div>
             </div>
         `;
@@ -603,16 +667,20 @@ function renderCategoryCardsGrid(catSumMap, catCountMap, totalExpense) {
         return;
     }
 
-    container.innerHTML = entries.map(([cat, val]) => {
-        const meta = getCategoryMeta(cat);
+    const labels = entries.map(e => e[0]);
+    const colors = getDistinctColorsForList(labels);
+
+    container.innerHTML = entries.map(([cat, val], idx) => {
+        const meta = getCategoryMeta(cat, idx);
+        const color = colors[idx] || meta.color;
         const count = catCountMap[cat] || 1;
         const pct = totalExpense > 0 ? ((val / totalExpense) * 100).toFixed(1) : 0;
         const isActive = (currentSelectedCatFilter === cat) ? 'active' : '';
 
         return `
-            <div class="cat-item-card ${isActive}" data-category="${cat}">
+            <div class="cat-item-card ${isActive}" data-category="${cat}" style="border-left: 3px solid ${color};">
                 <div class="cat-item-top">
-                    <span class="cat-item-title">${meta.icon} ${cat}</span>
+                    <span class="cat-item-title" style="color: ${color};">${meta.icon} ${cat}</span>
                     <span class="cat-item-count">${count}건</span>
                 </div>
                 <div class="cat-item-amount">${formatKRW(val)}</div>
@@ -787,7 +855,7 @@ function renderCategoryTransactionsTable(overrideTxs = null) {
                 <td>${tx.date || '-'}</td>
                 <td><span class="${accBadgeClass}">${tx.account || '기본계좌'}</span></td>
                 <td>
-                    <span class="badge-cat-tag">
+                    <span class="badge-cat-tag" style="background: ${catMeta.color}22; color: ${catMeta.color}; border-color: ${catMeta.color}55;">
                         ${catMeta.icon} ${tx.category || '기타'}
                     </span>
                     ${tx.subcategory ? `<small style="color: #64748b; margin-left: 4px;">(${tx.subcategory})</small>` : ''}
