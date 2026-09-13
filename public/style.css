@@ -1512,3 +1512,328 @@ body {
     color: #38bdf8;
 }
 
+/* ==========================================================================
+   Category Spending & Detailed Ledger Styles
+   ========================================================================== */
+.cat-summary-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cat-summary-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.diet-status-pill {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 10px 18px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+}
+
+.diet-status-pill span {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.diet-status-pill strong {
+    font-size: 14px;
+    color: var(--accent-gold-light);
+}
+
+.cat-hero-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+@media (max-width: 900px) {
+    .cat-hero-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.cat-visuals-row {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .cat-visuals-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cat-chart-box, .cat-cards-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Category TOP Ranking Bars */
+.cat-ranking-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cat-rank-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cat-rank-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.cat-rank-info .rank-name {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.cat-rank-info .rank-val {
+    color: var(--text-secondary);
+}
+
+.cat-rank-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.cat-rank-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* Category Cards Grid */
+.cat-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.cat-item-card {
+    background: var(--card-bg-sub);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cat-item-card:hover {
+    border-color: rgba(245, 158, 11, 0.45);
+    background: rgba(30, 37, 58, 0.8);
+    transform: translateY(-2px);
+}
+
+.cat-item-card.active {
+    border-color: var(--accent-gold);
+    background: rgba(245, 158, 11, 0.12);
+    box-shadow: 0 0 16px var(--glow-gold);
+}
+
+.cat-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cat-item-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cat-item-count {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.cat-item-amount {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fca5a5;
+}
+
+.cat-item-pct {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* Transactions Table Section */
+.cat-tx-section {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cat-tx-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.tx-search-wrapper {
+    flex: 1;
+    max-width: 320px;
+}
+
+.tx-search-input {
+    width: 100%;
+    background: rgba(11, 13, 20, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.tx-search-input:focus {
+    border-color: var(--accent-gold);
+}
+
+.cat-filter-pills-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cat-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cat-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.cat-pill.active {
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: #000;
+    font-weight: 700;
+}
+
+/* Detail Table */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.detail-table th {
+    text-align: left;
+    padding: 12px 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.detail-table td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+}
+
+.detail-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.detail-table .text-right {
+    text-align: right;
+}
+
+.badge-account {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(14, 165, 233, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+.badge-account.card {
+    background: rgba(244, 63, 94, 0.12);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+.badge-cat-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--accent-gold-light);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.tx-desc-main {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.tx-desc-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.tx-amount-val {
+    font-weight: 700;
+    color: #fca5a5;
+    font-size: 14px;
+}
+

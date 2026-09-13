@@ -1,10 +1,51 @@
 // Global Chart Instances
 let growthChartInstance = null;
 let categoryChartInstance = null;
+let categoryDetailChartInstance = null;
 
 // App State - Auto-detect today's current month so when months roll over, it is automatically selected
 const today = new Date();
 let currentMonth = today.getMonth() + 1; // 1 to 12 (e.g. 9 for September, 10 for October)
+
+// Category Tab State
+let currentTransactions = [];
+let currentCategories = {};
+let currentSelectedCatFilter = 'all';
+let currentSearchQuery = '';
+
+// Category Emoji & Color Map
+const CATEGORY_MAP = {
+    '식비': { icon: '🍚', color: '#f43f5e' },
+    '외식': { icon: '🍽️', color: '#fb7185' },
+    '카페': { icon: '☕', color: '#fbbf24' },
+    '디저트': { icon: '🍰', color: '#fcd34d' },
+    '쇼핑': { icon: '🛍️', color: '#ec4899' },
+    '패션': { icon: '👗', color: '#f472b6' },
+    '미용': { icon: '💄', color: '#fb7185' },
+    '교통': { icon: '🚗', color: '#38bdf8' },
+    '차량': { icon: '🚙', color: '#0ea5e9' },
+    '유류': { icon: '⛽', color: '#0284c7' },
+    '통신': { icon: '📱', color: '#a855f7' },
+    '구독': { icon: '📺', color: '#8b5cf6' },
+    '모임': { icon: '👥', color: '#fb923c' },
+    '회비': { icon: '🤝', color: '#f97316' },
+    '문화': { icon: '🎬', color: '#06b6d4' },
+    '여가': { icon: '🏖️', color: '#22d3ee' },
+    '의료': { icon: '🏥', color: '#10b981' },
+    '건강': { icon: '💊', color: '#34d399' },
+    '마트': { icon: '🛒', color: '#14b8a6' },
+    '생활': { icon: '🏠', color: '#64748b' },
+    '보험': { icon: '🛡️', color: '#6366f1' },
+    '기타': { icon: '💡', color: '#94a3b8' }
+};
+
+function getCategoryMeta(catName) {
+    if (!catName) return { icon: '💡', color: '#94a3b8' };
+    for (const [key, val] of Object.entries(CATEGORY_MAP)) {
+        if (catName.includes(key)) return val;
+    }
+    return { icon: '🏷️', color: '#94a3b8' };
+}
 
 // Helper to format currency
 function formatKRW(val) {
@@ -17,6 +58,7 @@ function initTabNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const tabPanels = {
         'home': document.getElementById('tab-home'),
+        'categories': document.getElementById('tab-categories'),
         'roadmap': document.getElementById('tab-roadmap'),
         'insurance': document.getElementById('tab-insurance'),
         'stocks': document.getElementById('tab-stocks')
@@ -26,6 +68,10 @@ function initTabNavigation() {
         'home': {
             title: '📋 월급(250만 원) 세부 황금 분배 & 당월 가계부',
             subtitle: '월 250만 원 황금 배분 (저축률 35%) 및 당월 실시간 소비 결산'
+        },
+        'categories': {
+            title: '📊 카테고리별 소비 분석 & 가계부 상세 내역',
+            subtitle: '월별 지출 카테고리 비중, 카드 다이어트 분석 및 실시간 소비 거래 내역'
         },
         'roadmap': {
             title: '👑 순자산 & 2033 마스터 로드맵',
@@ -71,6 +117,10 @@ function initTabNavigation() {
             } else if (tabKey === 'home') {
                 setTimeout(() => {
                     if (categoryChartInstance) categoryChartInstance.resize();
+                }, 50);
+            } else if (tabKey === 'categories') {
+                setTimeout(() => {
+                    if (categoryDetailChartInstance) categoryDetailChartInstance.resize();
                 }, 50);
             }
         });
@@ -426,6 +476,403 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
     }
 }
 
+// 6-1. Render Category Detail Doughnut Chart
+function renderCategoryDetailChart(catSumMap, totalExpense) {
+    const canvas = document.getElementById('categoryDetailChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const sortedEntries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]);
+    const labels = sortedEntries.map(e => e[0]);
+    const data = sortedEntries.map(e => e[1]);
+    const colors = sortedEntries.map(e => getCategoryMeta(e[0]).color);
+
+    if (categoryDetailChartInstance) {
+        categoryDetailChartInstance.destroy();
+        categoryDetailChartInstance = null;
+    }
+
+    if (data.length === 0) {
+        categoryDetailChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['지출 없음 / 기록 대기'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['rgba(255, 255, 255, 0.08)'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', font: { family: 'Outfit', size: 11 } }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+        return;
+    }
+
+    categoryDetailChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderColor: '#141826',
+                borderWidth: 2,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#f8fafc',
+                        font: { family: 'Outfit', size: 12, weight: '600' },
+                        boxWidth: 10,
+                        padding: 8
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#fbbf24',
+                    bodyColor: '#f8fafc',
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            const val = context.raw;
+                            const pct = totalExpense > 0 ? ((val / totalExpense) * 100).toFixed(1) : 0;
+                            return ` ${context.label}: ${formatKRW(val)} (${pct}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '62%'
+        }
+    });
+}
+
+// 6-2. Render Category Top Rankings Bars
+function renderCategoryRankings(catSumMap, totalExpense) {
+    const container = document.getElementById('catRankingContainer');
+    if (!container) return;
+
+    const sortedEntries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    if (sortedEntries.length === 0) {
+        container.innerHTML = '<p style="color: #64748b; font-size: 12px; text-align: center; padding: 10px;">기록된 지출 항목이 없습니다.</p>';
+        return;
+    }
+
+    container.innerHTML = sortedEntries.map(([cat, val], idx) => {
+        const meta = getCategoryMeta(cat);
+        const pct = totalExpense > 0 ? ((val / totalExpense) * 100).toFixed(1) : 0;
+        return `
+            <div class="cat-rank-item">
+                <div class="cat-rank-info">
+                    <span class="rank-name">${idx + 1}위 ${meta.icon} ${cat}</span>
+                    <span class="rank-val"><b>${formatKRW(val)}</b> (${pct}%)</span>
+                </div>
+                <div class="cat-rank-bar-bg">
+                    <div class="cat-rank-bar-fill" style="width: ${pct}%; background: ${meta.color};"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// 6-3. Render Interactive Category Cards Grid
+function renderCategoryCardsGrid(catSumMap, catCountMap, totalExpense) {
+    const container = document.getElementById('catCardsGrid');
+    if (!container) return;
+
+    const entries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]);
+    if (entries.length === 0) {
+        container.innerHTML = '<p style="color: #64748b; font-size: 12px; text-align: center; grid-column: 1/-1; padding: 20px;">당월 카테고리 소비 기록이 없습니다.</p>';
+        return;
+    }
+
+    container.innerHTML = entries.map(([cat, val]) => {
+        const meta = getCategoryMeta(cat);
+        const count = catCountMap[cat] || 1;
+        const pct = totalExpense > 0 ? ((val / totalExpense) * 100).toFixed(1) : 0;
+        const isActive = (currentSelectedCatFilter === cat) ? 'active' : '';
+
+        return `
+            <div class="cat-item-card ${isActive}" data-category="${cat}">
+                <div class="cat-item-top">
+                    <span class="cat-item-title">${meta.icon} ${cat}</span>
+                    <span class="cat-item-count">${count}건</span>
+                </div>
+                <div class="cat-item-amount">${formatKRW(val)}</div>
+                <div class="cat-item-pct">전체 소비의 <b>${pct}%</b></div>
+            </div>
+        `;
+    }).join('');
+
+    // Attach click handlers to cards to filter table
+    container.querySelectorAll('.cat-item-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const cat = card.dataset.category;
+            if (currentSelectedCatFilter === cat) {
+                currentSelectedCatFilter = 'all';
+            } else {
+                currentSelectedCatFilter = cat;
+            }
+            updateCategoryFilterUI();
+            renderCategoryTransactionsTable();
+        });
+    });
+}
+
+// 6-4. Render Category Filter Pills
+function renderCategoryPills(catSumMap, expenseTxs) {
+    const container = document.getElementById('catFilterPills');
+    if (!container) return;
+
+    const entries = Object.entries(catSumMap).sort((a, b) => b[1] - a[1]);
+    const totalCount = expenseTxs.length;
+
+    let html = `
+        <button class="cat-pill ${currentSelectedCatFilter === 'all' ? 'active' : ''}" data-cat="all">
+            전체보기 (<span id="pillCountAll">${totalCount}</span>)
+        </button>
+    `;
+
+    entries.forEach(([cat]) => {
+        const count = expenseTxs.filter(tx => (tx.category || '') === cat).length;
+        const meta = getCategoryMeta(cat);
+        const isActive = (currentSelectedCatFilter === cat) ? 'active' : '';
+        html += `
+            <button class="cat-pill ${isActive}" data-cat="${cat}">
+                ${meta.icon} ${cat} (${count})
+            </button>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    container.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentSelectedCatFilter = btn.dataset.cat || 'all';
+            updateCategoryFilterUI();
+            renderCategoryTransactionsTable();
+        });
+    });
+}
+
+function updateCategoryFilterUI() {
+    // Update pills active state
+    document.querySelectorAll('.cat-pill').forEach(btn => {
+        const cat = btn.dataset.cat;
+        if (cat === currentSelectedCatFilter) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Update category cards active state
+    document.querySelectorAll('.cat-item-card').forEach(card => {
+        const cat = card.dataset.category;
+        if (cat === currentSelectedCatFilter) {
+            card.classList.add('active');
+        } else {
+            card.classList.remove('active');
+        }
+    });
+}
+
+// 6-5. Render Filtered & Searched Transactions Table
+function renderCategoryTransactionsTable(overrideTxs = null) {
+    const tbody = document.getElementById('catTxTableBody');
+    const subtitle = document.getElementById('catTxListSubtitle');
+    if (!tbody) return;
+
+    const txsToUse = overrideTxs || currentTransactions || [];
+
+    // Filter by consumption/expense only
+    let list = txsToUse.filter(tx => {
+        const t = tx.type || '';
+        const cat = tx.category || '';
+        return (t === '지출' || t === '소비' || t === 'consumption' || (!t && Number(tx.amount) > 0)) &&
+               !cat.includes('저축') && !cat.includes('적금') && !cat.includes('청약') && !cat.includes('수입');
+    });
+
+    // Filter by Category
+    if (currentSelectedCatFilter && currentSelectedCatFilter !== 'all') {
+        list = list.filter(tx => (tx.category || '') === currentSelectedCatFilter);
+    }
+
+    // Filter by Search Query
+    if (currentSearchQuery && currentSearchQuery.trim()) {
+        const q = currentSearchQuery.trim().toLowerCase();
+        list = list.filter(tx => {
+            const desc = (tx.desc || tx.detail || '').toLowerCase();
+            const cat = (tx.category || '').toLowerCase();
+            const sub = (tx.subcategory || '').toLowerCase();
+            const acc = (tx.account || '').toLowerCase();
+            return desc.includes(q) || cat.includes(q) || sub.includes(q) || acc.includes(q);
+        });
+    }
+
+    // Update Subtitle
+    if (subtitle) {
+        const catLabel = currentSelectedCatFilter === 'all' ? '전체 카테고리' : `[${currentSelectedCatFilter}]`;
+        subtitle.innerText = `${catLabel} 거래 내역 총 ${list.length}건`;
+    }
+
+    if (list.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
+                    조회된 지출 내역이 없습니다. (카테고리 필터 또는 검색어를 확인해 주세요)
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = list.map(tx => {
+        const catMeta = getCategoryMeta(tx.category);
+        const isCard = (tx.account || '').includes('카드') || (tx.account || '').includes('현대');
+        const accBadgeClass = isCard ? 'badge-account card' : 'badge-account';
+
+        return `
+            <tr>
+                <td>${tx.date || '-'}</td>
+                <td><span class="${accBadgeClass}">${tx.account || '기본계좌'}</span></td>
+                <td>
+                    <span class="badge-cat-tag">
+                        ${catMeta.icon} ${tx.category || '기타'}
+                    </span>
+                    ${tx.subcategory ? `<small style="color: #64748b; margin-left: 4px;">(${tx.subcategory})</small>` : ''}
+                </td>
+                <td>
+                    <div class="tx-desc-main">${tx.desc || tx.detail || '지출 항목'}</div>
+                    ${tx.detail && tx.detail !== tx.desc ? `<div class="tx-desc-sub">${tx.detail}</div>` : ''}
+                </td>
+                <td class="text-right">
+                    <span class="tx-amount-val">-${formatKRW(Number(tx.amount) || 0)}</span>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// 6-6. Render Dedicated Category Spending & Ledger Tab Coordinator
+function renderCategoryTab(categories, transactions = [], month) {
+    currentCategories = categories || {};
+    currentTransactions = transactions || [];
+
+    // Filter only consumption / expense transactions
+    const expenseTxs = currentTransactions.filter(tx => {
+        const t = tx.type || '';
+        const cat = tx.category || '';
+        return (t === '지출' || t === '소비' || t === 'consumption' || (!t && Number(tx.amount) > 0)) &&
+               !cat.includes('저축') && !cat.includes('적금') && !cat.includes('청약') && !cat.includes('수입');
+    });
+
+    // 1. Calculate Summary Stats
+    let totalExpense = 0;
+    const catSumMap = {};
+    const catCountMap = {};
+
+    if (categories && typeof categories === 'object' && Object.keys(categories).length > 0) {
+        Object.entries(categories).forEach(([c, val]) => {
+            const num = Number(val) || 0;
+            if (num > 0 && !c.includes('저축') && !c.includes('적금') && !c.includes('청약')) {
+                catSumMap[c] = num;
+                totalExpense += num;
+            }
+        });
+    }
+
+    // Count transactions per category
+    expenseTxs.forEach(tx => {
+        const c = tx.category || '기타';
+        catCountMap[c] = (catCountMap[c] || 0) + 1;
+        if (!catSumMap[c]) {
+            catSumMap[c] = (catSumMap[c] || 0) + (Number(tx.amount) || 0);
+            totalExpense += (Number(tx.amount) || 0);
+        }
+    });
+
+    // Find TOP 1 Category
+    let topCat = '-';
+    let topCatVal = 0;
+    Object.entries(catSumMap).forEach(([c, val]) => {
+        if (val > topCatVal) {
+            topCatVal = val;
+            topCat = c;
+        }
+    });
+    const topCatPct = totalExpense > 0 ? ((topCatVal / totalExpense) * 100).toFixed(1) : 0;
+
+    const daysInMonth = new Date(2026, month, 0).getDate();
+    const dailyAvg = totalExpense > 0 ? Math.round(totalExpense / daysInMonth) : 0;
+
+    // Update Category Tab Metrics Header
+    const catMonthTitle = document.getElementById('catTabMonthTitle');
+    if (catMonthTitle) catMonthTitle.innerText = `2026년 ${month}월 소비 & 지출 결산`;
+
+    const catTotalExpenseElem = document.getElementById('catTotalExpense');
+    if (catTotalExpenseElem) catTotalExpenseElem.innerText = formatKRW(totalExpense);
+
+    const catTopCatElem = document.getElementById('catTopCategory');
+    if (catTopCatElem) catTopCatElem.innerText = topCatVal > 0 ? `${topCat} (${formatKRW(topCatVal)})` : '지출 내역 없음';
+
+    const catTopCatPctElem = document.getElementById('catTopCategoryPct');
+    if (catTopCatPctElem) catTopCatPctElem.innerText = topCatVal > 0 ? `전체 소비의 ${topCatPct}% 차지` : '예산 준비 중';
+
+    const catDailyAvgElem = document.getElementById('catDailyAvgExpense');
+    if (catDailyAvgElem) catDailyAvgElem.innerText = formatKRW(dailyAvg);
+
+    const catDaysElem = document.getElementById('catDaysInMonthText');
+    if (catDaysElem) catDaysElem.innerText = `${month}월 총 ${daysInMonth}일 기준`;
+
+    const catTotalCountElem = document.getElementById('catTotalCount');
+    if (catTotalCountElem) catTotalCountElem.innerText = `${expenseTxs.length}건`;
+
+    const catDietPill = document.getElementById('catDietPillText');
+    if (catDietPill) {
+        const MONTHLY_TARGET = 500000;
+        if (totalExpense <= MONTHLY_TARGET) {
+            const rem = MONTHLY_TARGET - totalExpense;
+            catDietPill.innerText = `목표 내 순항 (잔여 ${formatKRW(rem)})`;
+            catDietPill.style.color = '#34d399';
+        } else {
+            const over = totalExpense - MONTHLY_TARGET;
+            catDietPill.innerText = `⚠️ 예산 초과 (+${formatKRW(over)})`;
+            catDietPill.style.color = '#fb7185';
+        }
+    }
+
+    // 2. Render Large Doughnut Chart
+    renderCategoryDetailChart(catSumMap, totalExpense);
+
+    // 3. Render Top 5 Ranking Bars
+    renderCategoryRankings(catSumMap, totalExpense);
+
+    // 4. Render Category Cards Grid
+    renderCategoryCardsGrid(catSumMap, catCountMap, totalExpense);
+
+    // 5. Render Filter Pills and Transactions Table
+    renderCategoryPills(catSumMap, expenseTxs);
+    renderCategoryTransactionsTable(expenseTxs);
+}
+
 // 7. Load and Render Dashboard Data for Given Month
 async function loadDashboardData(month) {
     try {
@@ -463,7 +910,7 @@ async function loadDashboardData(month) {
         const bal = inc - exp - sav;
         const savRate = inc > 0 ? (((sav + Math.max(0, bal)) / inc) * 100).toFixed(1) : '35.0';
 
-        // 1. Update Metrics
+        // 1. Update Home Tab Metrics
         const incomeElem = document.getElementById('liveIncome');
         const expenseElem = document.getElementById('liveExpense');
         const savingsElem = document.getElementById('liveSavings');
@@ -479,11 +926,14 @@ async function loadDashboardData(month) {
         // 2. Update Hyundai Card Diet
         updateCardDietTracker(txs, exp);
 
-        // 3. Render Spending Category Chart
+        // 3. Render Spending Category Chart (Home Tab)
         renderCategoryChart(categories);
 
-        // 4. Render Calendar Grid
+        // 4. Render Calendar Grid (Home Tab)
         renderCalendar(2026, month, noSpendDays);
+
+        // 5. Render Dedicated Category Spending & Ledger Tab
+        renderCategoryTab(categories, txs, month);
 
     } catch (err) {
         console.error("Failed to load month data:", err);
@@ -616,11 +1066,23 @@ async function loadLivePortfolio() {
     }
 }
 
+// 9. Initialize Search Input Listener for Category Transactions
+function initCategorySearchListener() {
+    const searchInput = document.getElementById('txSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            currentSearchQuery = e.target.value || '';
+            renderCategoryTransactionsTable();
+        });
+    }
+}
+
 // App Initialization
 window.addEventListener('DOMContentLoaded', () => {
     initTabNavigation();
     initMonthSelector();
     initStockTabs();
+    initCategorySearchListener();
     loadDashboardData(currentMonth);
     loadLivePortfolio();
 });

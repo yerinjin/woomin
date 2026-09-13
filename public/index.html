@@ -33,6 +33,13 @@
                             <span class="nav-badge-sub">1번·5번 핵심 데일리</span>
                         </div>
                     </li>
+                    <li class="nav-item" data-tab="categories">
+                        <span class="nav-icon">📊</span>
+                        <div class="nav-text-group">
+                            <span class="nav-label">카테고리별 소비 가계부</span>
+                            <span class="nav-badge-sub">지출 분석 & 상세 내역</span>
+                        </div>
+                    </li>
                     <li class="nav-item" data-tab="roadmap">
                         <span class="nav-icon">👑</span>
                         <div class="nav-text-group">
@@ -353,6 +360,124 @@
                             <div class="calendar-grid" id="calendarGrid"></div>
                         </div>
 
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- =========================================================================
+                 TAB: 📊 카테고리별 소비 가계부 (지출 분석 & 상세 내역)
+                 ========================================================================= -->
+            <div class="tab-panel" id="tab-categories" style="display: none;">
+                
+                <!-- Category Summary Metric Stat Row -->
+                <section class="card cat-summary-hero">
+                    <div class="cat-summary-top">
+                        <div>
+                            <span class="hero-badge gold">🛒 실시간 지출 카테고리 심층 분석</span>
+                            <h2 id="catTabMonthTitle">2026년 9월 소비 & 지출 결산</h2>
+                            <p class="subtitle" id="catTabSubtitle">카테고리별 지출 비중과 상세 소비 내역을 분석합니다.</p>
+                        </div>
+                        <div class="diet-status-pill" id="catDietStatusPill">
+                            <span>💳 현대카드 다이어트 (월 50만)</span>
+                            <strong id="catDietPillText">목표 내 순항 중</strong>
+                        </div>
+                    </div>
+
+                    <div class="cat-hero-metrics-grid">
+                        <div class="metric-tile">
+                            <span class="lbl">당월 총 소비 지출</span>
+                            <span class="val expense-color" id="catTotalExpense">0원</span>
+                        </div>
+                        <div class="metric-tile">
+                            <span class="lbl">최다 지출 카테고리 (1위)</span>
+                            <span class="val gold-color" id="catTopCategory">-</span>
+                            <span class="sub-rate" id="catTopCategoryPct">비중: 0%</span>
+                        </div>
+                        <div class="metric-tile">
+                            <span class="lbl">일평균 소비액</span>
+                            <span class="val cyan-color" id="catDailyAvgExpense">0원</span>
+                            <span class="sub-rate" id="catDaysInMonthText">기준: 당월 일수</span>
+                        </div>
+                        <div class="metric-tile">
+                            <span class="lbl">총 지출 건수</span>
+                            <span class="val purple-color" id="catTotalCount">0건</span>
+                            <span class="sub-rate" id="catCardCountText">현대카드 결제 포함</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2-Column: Left (Charts & Ranking), Right (Category Breakdown Cards) -->
+                <div class="cat-visuals-row">
+                    <!-- Left: Category Doughnut Chart & Top Rank Progress -->
+                    <div class="card cat-chart-box">
+                        <div class="section-title">
+                            <span class="icon">📊</span>
+                            <div>
+                                <h3>카테고리별 지출 분포</h3>
+                                <span class="subtitle">지출 비중 상위 순서대로 도넛 차트에 반영됩니다.</span>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrapper" style="position: relative; height: 260px; width: 100%; margin: 15px 0;">
+                            <canvas id="categoryDetailChart"></canvas>
+                        </div>
+                        <div class="cat-ranking-container" id="catRankingContainer">
+                            <!-- JS will generate TOP ranking bars -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Interactive Category Cards Grid -->
+                    <div class="card cat-cards-box">
+                        <div class="section-title">
+                            <span class="icon">🗂️</span>
+                            <div>
+                                <h3>카테고리별 소비 집계</h3>
+                                <span class="subtitle">카드를 클릭하면 하단 상세 내역이 해당 카테고리로 필터링됩니다.</span>
+                            </div>
+                        </div>
+                        <div class="cat-cards-grid" id="catCardsGrid">
+                            <!-- JS will generate category cards -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Transaction Detail List with Category Filter & Search -->
+                <section class="card cat-tx-section">
+                    <div class="cat-tx-header">
+                        <div class="section-title">
+                            <span class="icon">📝</span>
+                            <div>
+                                <h3>가계부 지출 상세 내역</h3>
+                                <span class="subtitle" id="catTxListSubtitle">선택한 카테고리의 실제 거래 내역입니다.</span>
+                            </div>
+                        </div>
+                        <div class="tx-search-wrapper">
+                            <input type="text" id="txSearchInput" class="tx-search-input" placeholder="🔍 가맹점/내용 검색 (예: 스타벅스, 식비 등)...">
+                        </div>
+                    </div>
+
+                    <!-- Category Filter Pills -->
+                    <div class="cat-filter-pills-bar" id="catFilterPills">
+                        <button class="cat-pill active" data-cat="all">전체보기 (<span id="pillCountAll">0</span>)</button>
+                        <!-- Dynamic Pills generated by JS -->
+                    </div>
+
+                    <!-- Transactions Table -->
+                    <div class="table-responsive">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">날짜</th>
+                                    <th style="width: 18%;">결제수단</th>
+                                    <th style="width: 20%;">지출 분류</th>
+                                    <th style="width: 30%;">상세 내역 / 가맹점</th>
+                                    <th style="width: 17%;" class="text-right">지출 금액</th>
+                                </tr>
+                            </thead>
+                            <tbody id="catTxTableBody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
