@@ -310,7 +310,10 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
     const spentText = document.getElementById('dietSpentAmount');
     const remainingText = document.getElementById('dietRemainingAmount');
     const statusText = document.getElementById('dietStatusText');
-    if (!progressBar) return;
+
+    const progressBarTop = document.getElementById('dietProgressBarTop');
+    const spentTextTop = document.getElementById('dietSpentAmountTop');
+    const remainingTextTop = document.getElementById('dietRemainingAmountTop');
 
     const MONTHLY_TARGET = 500000; // 50만 원
 
@@ -331,20 +334,23 @@ function updateCardDietTracker(transactions = [], consumptionTotal = 0) {
         cardSpent = consumptionTotal;
     }
 
-    const remaining = Math.max(0, MONTHLY_TARGET - cardSpent);
-    const pct = Math.min(100, (cardSpent / MONTHLY_TARGET) * 100);
+    if (progressBar) progressBar.style.width = `${pct}%`;
+    if (spentText) spentText.innerText = formatKRW(cardSpent);
+    if (remainingText) remainingText.innerText = formatKRW(remaining);
 
-    progressBar.style.width = `${pct}%`;
-    spentText.innerText = formatKRW(cardSpent);
-    remainingText.innerText = formatKRW(remaining);
+    if (progressBarTop) progressBarTop.style.width = `${pct}%`;
+    if (spentTextTop) spentTextTop.innerText = formatKRW(cardSpent);
+    if (remainingTextTop) remainingTextTop.innerText = formatKRW(remaining);
 
-    if (cardSpent <= MONTHLY_TARGET) {
-        statusText.innerText = `목표 내 순항 중 (${pct.toFixed(0)}% 사용 / 잔여 ${formatKRW(remaining)})`;
-        statusText.style.color = '#34d399';
-    } else {
-        const over = cardSpent - MONTHLY_TARGET;
-        statusText.innerText = `⚠️ 예산 초과 (+${formatKRW(over)})`;
-        statusText.style.color = '#fb7185';
+    if (statusText) {
+        if (cardSpent <= MONTHLY_TARGET) {
+            statusText.innerText = `목표 내 순항 중 (${pct.toFixed(0)}% 사용 / 잔여 ${formatKRW(remaining)})`;
+            statusText.style.color = '#34d399';
+        } else {
+            const over = cardSpent - MONTHLY_TARGET;
+            statusText.innerText = `⚠️ 예산 초과 (+${formatKRW(over)})`;
+            statusText.style.color = '#fb7185';
+        }
     }
 }
 
@@ -404,10 +410,128 @@ async function loadDashboardData(month) {
     }
 }
 
+// 7. Load Real-Time Live Portfolio (Pension & Stock holdings)
+async function loadLivePortfolio() {
+    try {
+        const res = await fetch('/api/portfolio');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || !data.pension || !data.stocks) return;
+
+        // 1. Update Pension Section
+        const pension = data.pension;
+        const pensionSub = document.getElementById('pensionSubtitle');
+        if (pensionSub) {
+            const sign = pension.profit >= 0 ? '+' : '';
+            const pctSign = pension.return_pct >= 0 ? '+' : '';
+            pensionSub.innerHTML = `총 6건 운용 • 평가금액 <b>${formatKRW(pension.total_val)}</b> (${sign}${formatKRW(pension.profit)} / ${pctSign}${pension.return_pct}%)`;
+        }
+        const pensionSim = document.getElementById('pensionCurrentValSim');
+        if (pensionSim) {
+            pensionSim.innerText = formatKRW(pension.total_val);
+        }
+
+        // 2. Update Stock Portfolio Header & Tab Buttons
+        const stocks = data.stocks;
+        const stockSub = document.getElementById('stockSubtitle');
+        if (stockSub) {
+            const sign = stocks.profit >= 0 ? '+' : '';
+            const pctSign = stocks.return_pct >= 0 ? '+' : '';
+            stockSub.innerHTML = `총 <b>${formatKRW(stocks.total_val)}</b> (${sign}${formatKRW(stocks.profit)} / ${pctSign}${stocks.return_pct}%) • 카카오 / 토스 해외 / 토스 국내`;
+        }
+
+        const btnKakao = document.getElementById('tabBtnKakao');
+        if (btnKakao && stocks.kakao) {
+            btnKakao.innerText = `카카오 (${(stocks.kakao.val / 10000).toFixed(0)}만)`;
+        }
+        const btnTossUS = document.getElementById('tabBtnTossUS');
+        if (btnTossUS && stocks.toss_us) {
+            btnTossUS.innerText = `토스 해외 (${(stocks.toss_us.val / 10000).toFixed(0)}만)`;
+        }
+        const btnTossKR = document.getElementById('tabBtnTossKR');
+        if (btnTossKR && stocks.toss_kr) {
+            btnTossKR.innerText = `토스 국내 (${(stocks.toss_kr.val / 10000).toFixed(0)}만)`;
+        }
+
+        // 3. Render Kakao Items
+        const kakaoList = document.getElementById('kakaoStockList');
+        if (kakaoList && stocks.kakao && stocks.kakao.items) {
+            kakaoList.innerHTML = stocks.kakao.items.map(item => {
+                const isPos = item.return_pct >= 0;
+                const sign = isPos ? '+' : '';
+                const diff = (item.val || 0) - (item.cost || 0);
+                const diffSign = diff >= 0 ? '+' : '';
+                return `
+                    <div class="stock-detail-row">
+                        <div class="stk-meta">
+                            <h4>${item.name} <span class="stk-shares">${item.shares}${typeof item.shares === 'number' ? '주' : ''}</span></h4>
+                            <p>${item.price_usd ? `$${item.price_usd}` : (item.price ? `현재가 ${formatKRW(item.price)}` : '우량주 분산')}</p>
+                        </div>
+                        <div class="stk-amount-group">
+                            <span class="stk-price">${formatKRW(item.val)}</span>
+                            <span class="stk-return ${isPos ? 'positive' : 'negative'}">${sign}${item.return_pct}% (${diffSign}${formatKRW(diff)})</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 4. Render Toss US Items
+        const tossUsList = document.getElementById('tossUsStockList');
+        if (tossUsList && stocks.toss_us && stocks.toss_us.items) {
+            tossUsList.innerHTML = stocks.toss_us.items.map(item => {
+                const isPos = item.return_pct >= 0;
+                const sign = isPos ? '+' : '';
+                const diff = (item.val || 0) - (item.cost || 0);
+                const diffSign = diff >= 0 ? '+' : '';
+                return `
+                    <div class="stock-detail-row">
+                        <div class="stk-meta">
+                            <h4>${item.name} <span class="stk-shares">${item.shares}${typeof item.shares === 'number' ? '주' : ''}</span></h4>
+                            <p>${item.price_usd ? `$${item.price_usd}` : '미국 성장주 포트폴리오'}</p>
+                        </div>
+                        <div class="stk-amount-group">
+                            <span class="stk-price">${formatKRW(item.val)}</span>
+                            <span class="stk-return ${isPos ? 'positive' : 'negative'}">${sign}${item.return_pct}% (${diffSign}${formatKRW(diff)})</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 5. Render Toss KR Items
+        const tossKrList = document.getElementById('tossKrStockList');
+        if (tossKrList && stocks.toss_kr && stocks.toss_kr.items) {
+            tossKrList.innerHTML = stocks.toss_kr.items.map(item => {
+                const isPos = item.return_pct >= 0;
+                const sign = isPos ? '+' : '';
+                const diff = (item.val || 0) - (item.cost || 0);
+                const diffSign = diff >= 0 ? '+' : '';
+                return `
+                    <div class="stock-detail-row">
+                        <div class="stk-meta">
+                            <h4>${item.name} <span class="stk-shares">${item.shares}${typeof item.shares === 'number' ? '주' : ''}</span></h4>
+                            <p>${item.price ? `현재가 ${formatKRW(item.price)}` : '국내 개별주'}</p>
+                        </div>
+                        <div class="stk-amount-group">
+                            <span class="stk-price">${formatKRW(item.val)}</span>
+                            <span class="stk-return ${isPos ? 'positive' : 'negative'}">${sign}${item.return_pct}% (${diffSign}${formatKRW(diff)})</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+    } catch (e) {
+        console.warn("Could not fetch live portfolio, keeping baseline snapshot:", e);
+    }
+}
+
 // App Initialization
 window.addEventListener('DOMContentLoaded', () => {
     initMonthSelector();
     initStockTabs();
     renderGrowthChart();
     loadDashboardData(currentMonth);
+    loadLivePortfolio();
 });

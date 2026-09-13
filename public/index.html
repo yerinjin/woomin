@@ -40,88 +40,262 @@
             </div>
         </header>
 
-        <!-- Hero Asset Summary Banner -->
-        <section class="hero-summary-card card">
-            <div class="hero-top">
-                <div class="hero-stat-main">
-                    <span class="hero-badge">부채 0원 • 100% 클린 순자산</span>
-                    <div class="hero-amount-group">
-                        <span class="hero-label">2026년 현재 순자산</span>
-                        <h2 class="hero-amount">4,300<span class="unit">만 원</span></h2>
+        <!-- Top Hero: Detailed Golden Allocation of 250M KRW Salary -->
+        <section class="hero-allocation-card card">
+            <div class="alloc-hero-header">
+                <div class="alloc-title-group">
+                    <span class="hero-badge gold">💰 월급 250만 원 완벽 황금 분배 (저축률 35% 달성)</span>
+                    <div class="alloc-main-title">
+                        <h2>📋 월급(250만 원) 세부 황금 분배 & 소비 플랜</h2>
+                        <p class="alloc-subtitle">적금 87만 + 가족 50만 + 순수보험 14.5만 + 고정비 30만 + 카드예산 50만 원</p>
                     </div>
                 </div>
-                
-                <div class="hero-target-cards">
-                    <div class="target-mini-card">
-                        <div class="target-title">
-                            <span>🏆 1차 골든 목표 (2030년)</span>
-                            <span class="badge gold">1억 원 클럽</span>
-                        </div>
-                        <div class="target-progress-wrap">
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar-fill gold-gradient" style="width: 43%;"></div>
-                            </div>
-                            <div class="progress-labels">
-                                <span>현재 4,300만</span>
-                                <strong>43% 달성</strong>
-                                <span>목표 1억</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="target-mini-card">
-                        <div class="target-title">
-                            <span>🎯 찐최종 마스터 (2033년)</span>
-                            <span class="badge blue">1.5억~1.6억</span>
-                        </div>
-                        <div class="target-progress-wrap">
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar-fill blue-gradient" style="width: 27.5%;"></div>
-                            </div>
-                            <div class="progress-labels">
-                                <span>동양 130% 환급 만기</span>
-                                <strong>27.5% 달성</strong>
-                                <span>확정 1억 5,500만</span>
-                            </div>
-                        </div>
+                <!-- Hyundai Card Live Diet Mini-Widget -->
+                <div class="hero-diet-widget">
+                    <div class="diet-widget-top">
+                        <span>💳 <b>현대카드 소비 다이어트</b></span>
+                        <span class="diet-target-badge">월 목표: 50만 원 이하</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill diet-gradient" id="dietProgressBarTop" style="width: 0%;"></div>
+                    </div>
+                    <div class="diet-widget-bot">
+                        <span>당월 누적 카드 소비: <strong id="dietSpentAmountTop">0원</strong></span>
+                        <span>남은 예산: <strong id="dietRemainingAmountTop" class="gold-color">500,000원</strong></span>
                     </div>
                 </div>
             </div>
 
-            <!-- 5 Big Pillars Snapshot -->
-            <div class="pillars-row">
+            <!-- 5 Golden Allocation Detailed Cards Grid -->
+            <div class="golden-alloc-grid">
+                
+                <!-- Category 1: 강제 적금/저축 -->
+                <div class="alloc-card border-blue">
+                    <div class="alloc-card-top">
+                        <div class="alloc-card-title">
+                            <span class="category-icon">🛡️</span>
+                            <div>
+                                <h4>강제 적금 / 저축 (35%)</h4>
+                                <span class="alloc-sum blue-color">875,750원 / 월</span>
+                            </div>
+                        </div>
+                        <span class="badge blue">미래 자산 기둥</span>
+                    </div>
+                    <ul class="alloc-detail-sublist">
+                        <li>
+                            <span class="sub-name">우리 청년도약적금</span>
+                            <span class="sub-val"><b>700,000원</b> <small>(29년 5천만 원)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">동양 종신 (저축형)</span>
+                            <span class="sub-val"><b>70,200원</b> <small>(33년 767만)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">라이나 종신 (저축형)</span>
+                            <span class="sub-val"><b>35,550원</b> <small>(29년 502만)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">미래에셋 ISA 투자</span>
+                            <span class="sub-val"><b>50,000원</b> <small>(S&P500+배당 모으기)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">주택청약종합저축</span>
+                            <span class="sub-val"><b>20,000원</b> <small>(청약 가점)</small></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 2: 부모님 지원 (주거비 대체) -->
+                <div class="alloc-card border-purple">
+                    <div class="alloc-card-top">
+                        <div class="alloc-card-title">
+                            <span class="category-icon">👨‍👩‍👧</span>
+                            <div>
+                                <h4>부모님 지원 (20%)</h4>
+                                <span class="alloc-sum purple-color">500,000원 / 월</span>
+                            </div>
+                        </div>
+                        <span class="badge purple">주거비 대체</span>
+                    </div>
+                    <ul class="alloc-detail-sublist">
+                        <li>
+                            <span class="sub-name">부모님 생활비 & 효도 지원</span>
+                            <span class="sub-val"><b>500,000원</b></span>
+                        </li>
+                        <li class="alloc-tip-li">
+                            <span class="sub-desc">💡 독립 월세(70만 원) 대비 매월 20만 원 이상 절약하며 가족과 든든하게 윈윈!</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 3: 순수 보장성 보험 -->
+                <div class="alloc-card border-cyan">
+                    <div class="alloc-card-top">
+                        <div class="alloc-card-title">
+                            <span class="category-icon">🏥</span>
+                            <div>
+                                <h4>순수 보장성 보험 (6%)</h4>
+                                <span class="alloc-sum cyan-color">145,510원 / 월</span>
+                            </div>
+                        </div>
+                        <span class="badge cyan">위험 철벽 방어</span>
+                    </div>
+                    <ul class="alloc-detail-sublist">
+                        <li>
+                            <span class="sub-name">DB손보 종합건강</span>
+                            <span class="sub-val"><b>112,800원</b> <small>(암/뇌/심장)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">라이나 치아보험</span>
+                            <span class="sub-val"><b>38,700원</b> <small>(보철/보존)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">흥국생명 실손의료비</span>
+                            <span class="sub-val"><b>18,081원</b> <small>(실비 80~90%)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">한화손보 운전자상해</span>
+                            <span class="sub-val"><b>15,229원</b> <small>(벌금/변호사)</small></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 4: 고정 생활비 & 회비 -->
+                <div class="alloc-card border-orange">
+                    <div class="alloc-card-top">
+                        <div class="alloc-card-title">
+                            <span class="category-icon">👥</span>
+                            <div>
+                                <h4>고정 생활비 & 회비 (12%)</h4>
+                                <span class="alloc-sum orange-color">296,300원 / 월</span>
+                            </div>
+                        </div>
+                        <span class="badge orange">사회생활 & 통신</span>
+                    </div>
+                    <ul class="alloc-detail-sublist">
+                        <li>
+                            <span class="sub-name">정기 모임 회비 (6건)</span>
+                            <span class="sub-val"><b>260,000원</b> <small>(이세미 축소)</small></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">알뜰폰 핸드폰 통신비</span>
+                            <span class="sub-val"><b>36,300원</b> <small>(자동이체)</small></span>
+                        </li>
+                        <li class="alloc-tip-li">
+                            <span class="sub-desc">이세미 모임(5만), 란린(5만), 늘푸른(6만), 가족(5만), 소현(5만) 등</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 5: 변동 생활비 (카드 다이어트) -->
+                <div class="alloc-card border-gold highlight-gold-bg">
+                    <div class="alloc-card-top">
+                        <div class="alloc-card-title">
+                            <span class="category-icon">💳</span>
+                            <div>
+                                <h4>변동 생활비 (카드 예산 20%)</h4>
+                                <span class="alloc-sum gold-color">45만 ~ 50만 원</span>
+                            </div>
+                        </div>
+                        <span class="badge gold">통장 흑자 핵심 ⭐</span>
+                    </div>
+                    <ul class="alloc-detail-sublist">
+                        <li>
+                            <span class="sub-name">1주일 권장 카드 한도</span>
+                            <span class="sub-val"><b>주 11만 ~ 12만 원</b></span>
+                        </li>
+                        <li>
+                            <span class="sub-name">하루 권장 생활비 예산</span>
+                            <span class="sub-val"><b>일 1.5만 ~ 1.8만 원</b></span>
+                        </li>
+                        <li class="alloc-tip-li">
+                            <span class="sub-desc">💡 식비, 카페, 문화, 쇼핑을 월 50만 원 이내로 방어하면 매달 통장에 15~20만 원 흑자 잔고가 쌓입니다!</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Net Worth Summary & 2033 Goal Milestone Bar -->
+        <section class="networth-strip-card card">
+            <div class="networth-strip-left">
+                <div class="networth-badge-group">
+                    <span class="hero-badge">부채 0원 • 100% 클린 순자산</span>
+                    <span class="strip-label">2026년 현재 총 순자산</span>
+                </div>
+                <div class="strip-amount-val">
+                    <h2>4,300<span class="unit">만 원</span></h2>
+                </div>
+            </div>
+
+            <div class="networth-targets-strip">
+                <div class="target-mini-card">
+                    <div class="target-title">
+                        <span>🏆 1차 골든 목표 (2030년)</span>
+                        <span class="badge gold">1억 원 공식 돌파</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill gold-gradient" style="width: 43%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>현재 4,300만</span>
+                        <strong>43% 달성</strong>
+                        <span>목표 1억</span>
+                    </div>
+                </div>
+
+                <div class="target-mini-card">
+                    <div class="target-title">
+                        <span>🎯 찐최종 마스터 (2033년)</span>
+                        <span class="badge blue">1.5억~1.6억 완성</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill blue-gradient" style="width: 28%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>동양 130% 만기 환급</span>
+                        <strong>28% 달성</strong>
+                        <span>확정 1억 5,500만</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 Big Pillars Quick Chips -->
+            <div class="pillars-row-strip">
                 <div class="pillar-chip">
                     <span class="chip-icon">🏦</span>
                     <div class="chip-content">
-                        <span class="chip-title">청년도약 + 예적금</span>
-                        <span class="chip-value">2,650만 ➔ <b>5,000만</b>(29년)</span>
+                        <span class="chip-title">청년도약적금</span>
+                        <span class="chip-value">2,100만 ➔ <b>5,000만</b>(29년)</span>
                     </div>
                 </div>
                 <div class="pillar-chip">
                     <span class="chip-icon">💼</span>
                     <div class="chip-content">
-                        <span class="chip-title">IBK 퇴직연금 (DC)</span>
+                        <span class="chip-title">IBK 퇴직연금</span>
                         <span class="chip-value">958만 ➔ <b>3,240만</b>(33년)</span>
                     </div>
                 </div>
                 <div class="pillar-chip">
                     <span class="chip-icon">🛡️</span>
                     <div class="chip-content">
-                        <span class="chip-title">확정 종신보험 (2건)</span>
+                        <span class="chip-title">확정 종신보험(2건)</span>
                         <span class="chip-value">기납 450만 ➔ <b>1,320만</b>(33년)</span>
                     </div>
                 </div>
                 <div class="pillar-chip">
                     <span class="chip-icon">📈</span>
                     <div class="chip-content">
-                        <span class="chip-title">토스·ISA 미국투자</span>
+                        <span class="chip-title">토스·카카오·ISA</span>
                         <span class="chip-value">247만 (월 4.4만 모으기)</span>
                     </div>
                 </div>
                 <div class="pillar-chip">
                     <span class="chip-icon">🏠</span>
                     <div class="chip-content">
-                        <span class="chip-title">주택청약종합저축</span>
+                        <span class="chip-title">주택청약저축</span>
                         <span class="chip-value">410만 (월 2만 적립)</span>
                     </div>
                 </div>
@@ -336,13 +510,13 @@
                                 <span class="icon">💼</span>
                                 <div>
                                     <h2>IBK 퇴직연금 (DC형) 실시간 현황</h2>
-                                    <span class="subtitle">총 6건 운용 • 평가금액 <b>9,568,440원</b> (+71,172원 / +0.75%)</span>
+                                    <span class="subtitle" id="pensionSubtitle">총 6건 운용 • 평가금액 <b>9,568,440원</b> (+71,172원 / +0.75%)</span>
                                 </div>
                             </div>
-                            <span class="badge blue">2026.09 실시간 연동</span>
+                            <span class="badge blue" id="pensionBadge">실시간 시세 연동</span>
                         </div>
 
-                        <div class="pension-breakdown-list">
+                        <div class="pension-breakdown-list" id="pensionList">
                             <div class="breakdown-item">
                                 <div class="bd-left">
                                     <span class="bd-tag safe">안전 정기예금 (3.04%)</span>
@@ -388,7 +562,7 @@
                         <div class="pension-simulation-box">
                             <div class="sim-row">
                                 <span>현재 총 적립 평가액</span>
-                                <strong>9,568,440원</strong>
+                                <strong id="pensionCurrentValSim">9,568,440원</strong>
                             </div>
                             <div class="sim-row">
                                 <span>회사 법정 추가 적립 (연 ~260만 원 × 7년)</span>
@@ -408,23 +582,23 @@
                                 <span class="icon">📈</span>
                                 <div>
                                     <h2>주식 & 투자 포트폴리오 실시간 보유 종목</h2>
-                                    <span class="subtitle">총 2,236,079원 • 카카오페이 / 토스 해외 / 토스 국내</span>
+                                    <span class="subtitle" id="stockSubtitle">총 2,236,079원 • 카카오페이 / 토스 해외 / 토스 국내</span>
                                 </div>
                             </div>
-                            <span class="badge green">2026.09 실시간 연동</span>
+                            <span class="badge green" id="stockBadge">실시간 시세 연동</span>
                         </div>
 
                         <!-- Stock Portfolio Tabs -->
                         <div class="stock-tab-buttons">
-                            <button class="stk-tab-btn active" data-tab="kakao">카카오페이 (133.5만)</button>
-                            <button class="stk-tab-btn" data-tab="toss_us">토스 해외 (66.1만)</button>
-                            <button class="stk-tab-btn" data-tab="toss_kr">토스 국내 (23.9만)</button>
-                            <button class="stk-tab-btn" data-tab="isa">미래에셋 ISA</button>
+                            <button class="stk-tab-btn active" id="tabBtnKakao" data-tab="kakao">카카오 (134만)</button>
+                            <button class="stk-tab-btn" id="tabBtnTossUS" data-tab="toss_us">토스 해외 (67만)</button>
+                            <button class="stk-tab-btn" id="tabBtnTossKR" data-tab="toss_kr">토스 국내 (24만)</button>
+                            <button class="stk-tab-btn" id="tabBtnISA" data-tab="isa">미래 ISA</button>
                         </div>
 
                         <!-- Tab 1: KakaoPay Stocks -->
                         <div class="stock-tab-content active" id="tab_kakao">
-                            <div class="stock-items-scroll">
+                            <div class="stock-items-scroll" id="kakaoStockList">
                                 <div class="stock-detail-row">
                                     <div class="stk-meta">
                                         <h4>KODEX 미국나스닥100 <span class="stk-shares">26주</span></h4>
@@ -470,7 +644,7 @@
 
                         <!-- Tab 2: Toss US Stocks -->
                         <div class="stock-tab-content" id="tab_toss_us" style="display: none;">
-                            <div class="stock-items-scroll">
+                            <div class="stock-items-scroll" id="tossUsStockList">
                                 <div class="stock-detail-row">
                                     <div class="stk-meta">
                                         <h4>인텔 (INTC) <span class="stk-shares">2주</span></h4>
@@ -516,7 +690,7 @@
 
                         <!-- Tab 3: Toss KR Stocks -->
                         <div class="stock-tab-content" id="tab_toss_kr" style="display: none;">
-                            <div class="stock-items-scroll">
+                            <div class="stock-items-scroll" id="tossKrStockList">
                                 <div class="stock-detail-row">
                                     <div class="stk-meta">
                                         <h4>한화오션 <span class="stk-shares">1주</span></h4>
@@ -579,8 +753,8 @@
                                         <p>미래에셋 ISA [중개형] 매월 8일 적립식 모으기</p>
                                     </div>
                                     <div class="stk-amount-group">
-                                        <span class="stk-price">월 44,374원</span>
-                                        <span class="stk-return positive">🚀 자동 적립 가동 중</span>
+                                        <span class="stk-price">월 50,000원</span>
+                                        <span class="stk-return positive">🚀 매달 5만 원 자동이체 (모으기 4.4만)</span>
                                     </div>
                                 </div>
                                 <div class="pension-simulation-box" style="margin-top: 10px;">
@@ -634,43 +808,6 @@
                             <span class="val balance-color" id="liveBalance">0원</span>
                             <span class="sub-rate" id="liveSavingsRate">저축률: 0%</span>
                         </div>
-                    </div>
-
-                    <!-- Monthly Golden Allocation Checklist -->
-                    <div class="allocation-checklist">
-                        <h3>📋 월급(250만 원) 황금 분배 현황</h3>
-                        <ul class="alloc-list">
-                            <li>
-                                <div class="alloc-name">
-                                    <span class="bullet blue">●</span> 강제 적금/저축 (청년도약 70+종신 10.5+청약 2+ISA 4.4)
-                                </div>
-                                <strong>87만 원 (35%)</strong>
-                            </li>
-                            <li>
-                                <div class="alloc-name">
-                                    <span class="bullet purple">●</span> 부모님 지원 (주거 대체/효도 지원금)
-                                </div>
-                                <strong>50만 원 (20%)</strong>
-                            </li>
-                            <li>
-                                <div class="alloc-name">
-                                    <span class="bullet cyan">●</span> 순수 보장성 보험 (실비/종합/치아/운전자)
-                                </div>
-                                <strong>14.5만 원 (6%)</strong>
-                            </li>
-                            <li>
-                                <div class="alloc-name">
-                                    <span class="bullet orange">●</span> 고정 생활비 & 회비 (통신/모임)
-                                </div>
-                                <strong>30만 원 (12%)</strong>
-                            </li>
-                            <li class="diet-target-item">
-                                <div class="alloc-name">
-                                    <span class="bullet red">●</span> 변동 생활비 (현대카드 예산 목표)
-                                </div>
-                                <strong class="gold-color">45만~50만 원 (20%)</strong>
-                            </li>
-                        </ul>
                     </div>
 
                     <!-- Hyundai Card Diet Tracker -->

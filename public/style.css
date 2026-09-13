@@ -215,155 +215,275 @@ body {
 }
 
 /* ==========================================================================
-   Hero Asset Summary Card
+   Hero Detailed Golden Allocation Card (Top Section)
    ========================================================================== */
-.hero-summary-card {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.85) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+.hero-allocation-card {
+    background: linear-gradient(135deg, rgba(20, 26, 43, 0.9) 0%, rgba(11, 15, 25, 0.95) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.25);
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-.hero-summary-card::before {
+.hero-allocation-card::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #f59e0b, #0ea5e9, #10b981, #8b5cf6);
+    background: linear-gradient(90deg, #f59e0b, #0ea5e9, #10b981, #8b5cf6, #f43f5e);
 }
 
-.hero-top {
-    display: grid;
-    grid-template-columns: minmax(280px, 320px) 1fr;
+.alloc-hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 24px;
-    align-items: center;
-    min-width: 0;
+    flex-wrap: wrap;
 }
 
-@media (max-width: 960px) {
-    .hero-top {
-        grid-template-columns: 1fr;
-    }
-}
-
-.hero-stat-main {
+.alloc-title-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    width: fit-content;
+.hero-badge.gold {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.35);
 }
 
-.hero-amount-group .hero-label {
+.alloc-main-title h2 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+}
+
+.alloc-subtitle {
     font-size: 13px;
     color: var(--text-secondary);
-    font-weight: 500;
+    margin-top: 4px;
 }
 
-.hero-amount {
-    font-size: 38px;
-    font-weight: 900;
-    letter-spacing: -1px;
-    color: #ffffff;
-    line-height: 1.1;
-    margin-top: 3px;
-}
-
-.hero-amount .unit {
-    font-size: 20px;
-    font-weight: 600;
-    color: #94a3b8;
-    margin-left: 4px;
-}
-
-.hero-target-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 14px;
-    min-width: 0;
-}
-
-.target-mini-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    padding: 14px 18px;
+/* Hyundai Card Mini Widget in Hero */
+.hero-diet-widget {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    border-radius: 12px;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-width: 0;
+    gap: 8px;
+    min-width: 280px;
 }
 
-.target-title {
+.diet-widget-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 12px;
+}
+
+.diet-target-badge {
+    font-size: 11px;
+    color: #fb7185;
+    font-weight: 700;
+    background: rgba(244, 63, 94, 0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.diet-widget-bot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* 5 Golden Allocation Cards Grid */
+.golden-alloc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    width: 100%;
+}
+
+.alloc-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alloc-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.alloc-card.border-blue { border-color: rgba(14, 165, 233, 0.3); }
+.alloc-card.border-purple { border-color: rgba(139, 92, 246, 0.3); }
+.alloc-card.border-cyan { border-color: rgba(6, 182, 212, 0.3); }
+.alloc-card.border-orange { border-color: rgba(249, 115, 22, 0.3); }
+.alloc-card.border-gold { border-color: rgba(245, 158, 11, 0.4); }
+
+.highlight-gold-bg {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(20, 26, 43, 0.4) 100%);
+}
+
+.alloc-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.alloc-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-icon {
+    font-size: 22px;
+}
+
+.alloc-card-title h4 {
     font-size: 13px;
     font-weight: 700;
     color: #f1f5f9;
 }
 
-.progress-bar-bg {
-    background: rgba(255, 255, 255, 0.06);
-    height: 8px;
-    border-radius: 5px;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
+.alloc-sum {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
-.progress-bar-fill {
-    height: 100%;
-    border-radius: 5px;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+.blue-color { color: #38bdf8; }
+.purple-color { color: #a78bfa; }
+.cyan-color { color: #22d3ee; }
+.orange-color { color: #fb923c; }
+.gold-color { color: #fbbf24; }
+
+.alloc-detail-sublist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 10px;
 }
 
-.gold-gradient {
-    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
-    box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
-}
-
-.blue-gradient {
-    background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
-}
-
-.progress-labels {
+.alloc-detail-sublist li {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 11px;
+    color: var(--text-secondary);
+    gap: 6px;
+}
+
+.alloc-detail-sublist .sub-name {
+    color: #cbd5e1;
+    font-weight: 500;
+}
+
+.alloc-detail-sublist .sub-val b {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.alloc-detail-sublist .sub-val small {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.alloc-tip-li {
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.sub-desc {
+    font-size: 10.5px;
     color: var(--text-muted);
 }
 
-.progress-labels strong {
-    color: var(--text-primary);
-    font-size: 12px;
+/* ==========================================================================
+   Net Worth Strip Card (Clean & Prominent)
+   ========================================================================== */
+.networth-strip-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+    align-items: center;
+    padding: 18px 24px;
+    border-radius: 16px;
 }
 
-/* 5 Pillars Snapshot Row */
-.pillars-row {
+@media (max-width: 1024px) {
+    .networth-strip-card {
+        grid-template-columns: 1fr;
+    }
+}
+
+.networth-strip-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.networth-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.strip-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.strip-amount-val h2 {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: #ffffff;
+}
+
+.strip-amount-val .unit {
+    font-size: 18px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-left: 4px;
+}
+
+.networth-targets-strip {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.pillars-row-strip {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-top: 16px;
-    min-width: 0;
+    padding-top: 14px;
+    margin-top: 6px;
 }
 
 .pillar-chip {
@@ -890,29 +1010,36 @@ body {
 
 /* Stocks & Tabs */
 .stock-tab-buttons {
-    display: flex;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
     background: rgba(255, 255, 255, 0.03);
-    padding: 3px;
+    padding: 4px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
-    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+    .stock-tab-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .stk-tab-btn {
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    padding: 5px 10px;
+    padding: 7px 8px;
     border-radius: 6px;
     font-family: inherit;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    flex: 1;
     text-align: center;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stk-tab-btn:hover {
@@ -931,17 +1058,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 280px;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-
-.stock-items-scroll::-webkit-scrollbar {
-    width: 4px;
-}
-.stock-items-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    min-height: 340px;
+    padding-right: 2px;
 }
 
 .stock-detail-row {
