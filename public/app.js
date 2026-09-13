@@ -694,6 +694,39 @@ function updateCategoryFilterUI() {
     });
 }
 
+function renderTransactionDesc(tx) {
+    let mainDesc = (tx.desc || '').trim();
+    let subDetail = (tx.detail || '').trim();
+
+    // Check if mainDesc is numeric / balance formula artifact / empty / '-'
+    if (!mainDesc || /^[-+]?[\d,.]+$/.test(mainDesc) || mainDesc === '0' || mainDesc === '-' || mainDesc === '◀' || mainDesc === '▶') {
+        mainDesc = '';
+    }
+    // Check if subDetail is numeric / balance formula artifact / empty / '-'
+    if (!subDetail || /^[-+]?[\d,.]+$/.test(subDetail) || subDetail === '0' || subDetail === '-' || subDetail === '◀' || subDetail === '▶') {
+        subDetail = '';
+    }
+
+    if (mainDesc && subDetail && mainDesc === subDetail) {
+        subDetail = '';
+    }
+
+    if (!mainDesc && subDetail) {
+        mainDesc = subDetail;
+        subDetail = '';
+    }
+
+    // If completely blank in the sheet, show clean blank space
+    if (!mainDesc && !subDetail) {
+        return `<span style="color: rgba(255, 255, 255, 0.2);">-</span>`;
+    }
+
+    return `
+        <div class="tx-desc-main">${mainDesc}</div>
+        ${subDetail ? `<div class="tx-desc-sub">${subDetail}</div>` : ''}
+    `;
+}
+
 // 6-5. Render Filtered & Searched Transactions Table
 function renderCategoryTransactionsTable(overrideTxs = null) {
     const tbody = document.getElementById('catTxTableBody');
@@ -760,8 +793,7 @@ function renderCategoryTransactionsTable(overrideTxs = null) {
                     ${tx.subcategory ? `<small style="color: #64748b; margin-left: 4px;">(${tx.subcategory})</small>` : ''}
                 </td>
                 <td>
-                    <div class="tx-desc-main">${tx.desc || tx.detail || '지출 항목'}</div>
-                    ${tx.detail && tx.detail !== tx.desc ? `<div class="tx-desc-sub">${tx.detail}</div>` : ''}
+                    ${renderTransactionDesc(tx)}
                 </td>
                 <td class="text-right">
                     <span class="tx-amount-val">-${formatKRW(Number(tx.amount) || 0)}</span>
