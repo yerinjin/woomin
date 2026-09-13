@@ -50,8 +50,8 @@
                     <li class="nav-item" data-tab="stocks">
                         <span class="nav-icon">📈</span>
                         <div class="nav-text-group">
-                            <span class="nav-label">실시간 주식 & 연금</span>
-                            <span class="nav-badge-sub">IBK·카카오·토스·ISA</span>
+                            <span class="nav-label">미래에셋 주식 & 연금</span>
+                            <span class="nav-badge-sub">미래에셋 통합 & IBK DC</span>
                         </div>
                     </li>
                 </ul>
@@ -282,7 +282,7 @@
                             <span class="icon">💵</span>
                             <div>
                                 <h2 id="ledgerMonthTitle">2026년 9월 가계부 실시간 현황</h2>
-                                <span class="subtitle">실제 수입 / 지출 / 자동 저축 내역 실시간 결산</span>
+                                <span class="subtitle" id="ledgerStatusSubtitle">실제 수입 / 지출 / 자동 저축 내역 실시간 결산</span>
                             </div>
                         </div>
                     </div>
@@ -433,7 +433,7 @@
                         <div class="pillar-chip">
                             <span class="chip-icon">📈</span>
                             <div class="chip-content">
-                                <span class="chip-title">토스·카카오·ISA</span>
+                                <span class="chip-title">미래에셋 주식 & ISA</span>
                                 <span class="chip-value">247만 (월 5만 모으기)</span>
                             </div>
                         </div>
@@ -648,7 +648,7 @@
             </div>
 
             <!-- =========================================================================
-                 TAB 4: 📈 실시간 주식 & 연금
+                 TAB 4: 📈 미래에셋 주식 & 연금 (통합 단일 연동)
                  ========================================================================= -->
             <div class="tab-panel" id="tab-stocks" style="display: none;">
                 
@@ -726,197 +726,139 @@
                         </div>
                     </section>
 
-                    <!-- Toss & Stock Investments -->
+                    <!-- Mirae Asset Consolidated Stocks & ISA -->
                     <section class="card section-card sub-card">
                         <div class="section-header">
                             <div class="section-title">
                                 <span class="icon">📈</span>
                                 <div>
-                                    <h2>주식 & 투자 포트폴리오 실시간 보유 종목</h2>
-                                    <span class="subtitle" id="stockSubtitle">총 2,236,079원 • 카카오페이 / 토스 해외 / 토스 국내</span>
+                                    <h2>미래에셋 주식 & ISA 실시간 통합 현황</h2>
+                                    <span class="subtitle" id="stockSubtitle">총 평가금액 <b>2,473,000원</b> • 미래에셋증권 단일 통합 연동</span>
                                 </div>
                             </div>
-                            <span class="badge green" id="stockBadge">실시간 시세 연동</span>
+                            <span class="badge green" id="stockBadge">미래에셋 실시간 연동</span>
                         </div>
 
-                        <!-- Stock Portfolio Tabs -->
-                        <div class="stock-tab-buttons">
-                            <button class="stk-tab-btn active" id="tabBtnKakao" data-tab="kakao">카카오 (134만)</button>
-                            <button class="stk-tab-btn" id="tabBtnTossUS" data-tab="toss_us">토스 해외 (67만)</button>
-                            <button class="stk-tab-btn" id="tabBtnTossKR" data-tab="toss_kr">토스 국내 (24만)</button>
-                            <button class="stk-tab-btn" id="tabBtnISA" data-tab="isa">미래 ISA</button>
+                        <!-- ISA Auto-Invest Highlight Box -->
+                        <div class="isa-banner-box">
+                            <div class="isa-banner-top">
+                                <span class="badge gold">미래에셋 ISA [중개형]</span>
+                                <span class="isa-plan-val">매월 8일 <b>50,000원</b> 자동 모으기</span>
+                            </div>
+                            <p class="isa-banner-desc">TIGER 미국S&P500 + TIGER 미국배당다우존스 분할 매수 ➔ <b>2033년 510만 원+</b> 비과세 자산화</p>
                         </div>
 
-                        <!-- Tab 1: KakaoPay Stocks -->
-                        <div class="stock-tab-content active" id="tab_kakao">
-                            <div class="stock-items-scroll" id="kakaoStockList">
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>KODEX 미국나스닥100 <span class="stk-shares">26주</span></h4>
-                                        <p>평단 23,474원</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">680,290원</span>
-                                        <span class="stk-return positive">+11.46% (+69,950원)</span>
-                                    </div>
+                        <!-- Mirae Asset Stock Items List (Unified Single View) -->
+                        <div class="stock-items-scroll" id="miraeStockList">
+                            <!-- Populated dynamically by JS -->
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>KODEX 미국나스닥100 <span class="stk-shares">26주</span></h4>
+                                    <p>미국 대표 지수 ETF • 현재가 26,165원</p>
                                 </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>엔비디아 (NVDA) <span class="stk-shares">1.5주</span></h4>
-                                        <p>평단 260,874원</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">452,239원</span>
-                                        <span class="stk-return positive">+15.56% (+60,927원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>SOL 조선TOP3플러스 <span class="stk-shares">4주</span></h4>
-                                        <p>평단 35,475원</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">113,400원</span>
-                                        <span class="stk-return negative">-20.08% (-28,500원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>QQQ / MSFT / MCD / TSLA <span class="stk-shares">소수점</span></h4>
-                                        <p>미국 우량주 분산</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">90,348원</span>
-                                        <span class="stk-return positive">소수점 분산</span>
-                                    </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">680,290원</span>
+                                    <span class="stk-return positive">+11.46% (+69,950원)</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Tab 2: Toss US Stocks -->
-                        <div class="stock-tab-content" id="tab_toss_us" style="display: none;">
-                            <div class="stock-items-scroll" id="tossUsStockList">
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>인텔 (INTC) <span class="stk-shares">2주</span></h4>
-                                        <p>평단가 대비 대박 수익</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">274,349원</span>
-                                        <span class="stk-return positive">⭐ +138.7% (+159,415원)</span>
-                                    </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>엔비디아 (NVDA) <span class="stk-shares">1.5주</span></h4>
+                                    <p>미국 글로벌 AI 대장주 • $225.73</p>
                                 </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>리졸브 AI <span class="stk-shares">53주</span></h4>
-                                        <p>AI 이커머스 솔루션</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">163,020원</span>
-                                        <span class="stk-return negative">-50.3% (-165,026원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>슈뢰딩거 <span class="stk-shares">2주</span></h4>
-                                        <p>AI 신약 개발 플랫폼</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">53,534원</span>
-                                        <span class="stk-return negative">-6.9% (-4,026원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>빅베어 AI / 실SQ / 플루언스 / 아베 / 퀀텀 / 리커젼</h4>
-                                        <p>미국 AI·로보틱스·바이오 성장주</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">170,519원</span>
-                                        <span class="stk-return">총 9개 종목</span>
-                                    </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">452,239원</span>
+                                    <span class="stk-return positive">+15.56% (+60,927원)</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Tab 3: Toss KR Stocks -->
-                        <div class="stock-tab-content" id="tab_toss_kr" style="display: none;">
-                            <div class="stock-items-scroll" id="tossKrStockList">
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>한화오션 <span class="stk-shares">1주</span></h4>
-                                        <p>조선·방산 대표주</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">86,902원</span>
-                                        <span class="stk-return positive">+11.4% (+8,902원)</span>
-                                    </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>인텔 (INTC) <span class="stk-shares">2주</span></h4>
+                                    <p>미국 반도체 (대박 수익) • $104.47</p>
                                 </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>SOL 조선TOP3플러스 <span class="stk-shares">2주</span></h4>
-                                        <p>조선 ETF</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">56,684원</span>
-                                        <span class="stk-return negative">-4.5% (-2,716원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>한화솔루션 <span class="stk-shares">1주</span></h4>
-                                        <p>태양광·친환경</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">30,731원</span>
-                                        <span class="stk-return positive">+0.1% (+31원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>TIGER 미국S&P500 <span class="stk-shares">1주</span></h4>
-                                        <p>지수 ETF</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">25,454원</span>
-                                        <span class="stk-return positive">+13.6% (+3,054원)</span>
-                                    </div>
-                                </div>
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>셀바스AI / SG / 오리엔탈정공</h4>
-                                        <p>국내 중소형 개별주</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">39,659원</span>
-                                        <span class="stk-return">3개 종목</span>
-                                    </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">274,349원</span>
+                                    <span class="stk-return positive">⭐ +138.7% (+159,415원)</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Tab 4: ISA Auto-Buy -->
-                        <div class="stock-tab-content" id="tab_isa" style="display: none;">
-                            <div class="stock-items-scroll">
-                                <div class="stock-detail-row">
-                                    <div class="stk-meta">
-                                        <h4>TIGER 미국S&P500 + TIGER 미국배당다우존스</h4>
-                                        <p>미래에셋 ISA [중개형] 매월 8일 적립식 모으기</p>
-                                    </div>
-                                    <div class="stk-amount-group">
-                                        <span class="stk-price">월 50,000원</span>
-                                        <span class="stk-return positive">🚀 매달 5만 원 자동이체 (모으기 4.4만)</span>
-                                    </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>SOL 조선TOP3플러스 <span class="stk-shares">6주</span></h4>
+                                    <p>국내 조선 대표 ETF • 현재가 28,350원</p>
                                 </div>
-                                <div class="pension-simulation-box" style="margin-top: 10px;">
-                                    <div class="sim-row">
-                                        <span>2033년까지 87개월 누적 원금</span>
-                                        <strong>약 386만 원</strong>
-                                    </div>
-                                    <div class="sim-row total-sim">
-                                        <span>예상 비과세 자산 가치 (배당 재투자)</span>
-                                        <strong class="gold-color">510만 원+</strong>
-                                    </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">170,084원</span>
+                                    <span class="stk-return negative">-15.5% (-31,216원)</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>한화오션 <span class="stk-shares">1주</span></h4>
+                                    <p>국내 조선·방산 대표주 • 현재가 88,100원</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">86,902원</span>
+                                    <span class="stk-return positive">+11.4% (+8,902원)</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>리졸브 AI (RZLV) <span class="stk-shares">53주</span></h4>
+                                    <p>미국 AI 이커머스 • $2.31</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">163,020원</span>
+                                    <span class="stk-return negative">-50.3% (-165,026원)</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>슈뢰딩거 (SDGR) <span class="stk-shares">2주</span></h4>
+                                    <p>미국 AI 바이오 • $20.03</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">53,534원</span>
+                                    <span class="stk-return negative">-6.9% (-4,026원)</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>TIGER 미국S&P500 <span class="stk-shares">1주</span></h4>
+                                    <p>미국 S&P500 ETF • 현재가 25,460원</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">25,454원</span>
+                                    <span class="stk-return positive">+13.6% (+3,054원)</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>한화솔루션 <span class="stk-shares">1주</span></h4>
+                                    <p>국내 친환경 • 현재가 30,800원</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">30,731원</span>
+                                    <span class="stk-return positive">+0.1% (+31원)</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>QQQ / MSFT / MCD / TSLA <span class="stk-shares">소수점</span></h4>
+                                    <p>미국 우량주 분산</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">90,348원</span>
+                                    <span class="stk-return positive">소수점 분산</span>
+                                </div>
+                            </div>
+                            <div class="stock-detail-row">
+                                <div class="stk-meta">
+                                    <h4>빅베어 AI / 실SQ / 플루언스 등 <span class="stk-shares">6종</span></h4>
+                                    <p>미국 AI·로보틱스 성장주</p>
+                                </div>
+                                <div class="stk-amount-group">
+                                    <span class="stk-price">170,519원</span>
+                                    <span class="stk-return">총 6개 종목</span>
                                 </div>
                             </div>
                         </div>
